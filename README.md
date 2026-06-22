@@ -10,7 +10,7 @@ Weighted average, graduation projection, grade simulator — all in one static p
 [![Self-hosted](https://img.shields.io/badge/self--hosted-yes-orange?style=flat-square)]()
 [![No dependencies](https://img.shields.io/badge/dependencies-none-lightgrey?style=flat-square)]()
 
-![edu-dashboard preview](https://raw.githubusercontent.com/MatteoTomassetti25/edu-dashboard/main/assets/preview.png)
+
 
 </div>
 
