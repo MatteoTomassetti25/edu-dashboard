@@ -1,66 +1,9 @@
 [
-  {
-    "nome": "Algorithms and Data Structures",
-    "cfu": 9,
-    "voto": 28,
-    "data": "20/01/2025",
-    "status": "done",
-    "anno": 1,
-    "note": ""
-  },
-  {
-    "nome": "Operating Systems",
-    "cfu": 9,
-    "voto": 24,
-    "data": "10/02/2025",
-    "status": "done",
-    "anno": 1,
-    "note": "",
-    "special_cfu": 4
-  },
-  {
-    "nome": "Machine Learning",
-    "cfu": 9,
-    "voto": null,
-    "data": "15/07/2025",
-    "status": "next",
-    "anno": 1,
-    "note": ""
-  },
-  {
-    "nome": "Computer Networks",
-    "cfu": 6,
-    "voto": null,
-    "data": null,
-    "status": "todo",
-    "anno": 1,
-    "note": ""
-  },
-  {
-    "nome": "Distributed Systems",
-    "cfu": 6,
-    "voto": null,
-    "data": null,
-    "status": "todo",
-    "anno": 2,
-    "note": ""
-  },
-  {
-    "nome": "Master Thesis",
-    "cfu": 24,
-    "voto": null,
-    "data": null,
-    "status": "todo",
-    "anno": 2,
-    "note": "+bonus points"
-  },
-  {
-    "nome": "Free Choice Activity",
-    "cfu": 6,
-    "voto": null,
-    "data": null,
-    "status": "todo",
-    "anno": 2,
-    "note": ""
-  }
+  { "nome": "Algorithms and Data Structures", "cfu": 9,  "voto": 28,   "data": "20/01/2025", "status": "done", "anno": 1 },
+  { "nome": "Operating Systems",              "cfu": 9,  "voto": 24,   "data": "10/02/2025", "status": "done", "anno": 1, "special_cfu": 4 },
+  { "nome": "Machine Learning",               "cfu": 9,  "voto": null, "data": "15/07/2025", "status": "next", "anno": 1 },
+  { "nome": "Computer Networks",              "cfu": 6,  "voto": null, "data": null,          "status": "todo", "anno": 1 },
+  { "nome": "Distributed Systems",            "cfu": 6,  "voto": null, "data": null,          "status": "todo", "anno": 2 },
+  { "nome": "Master Thesis",                  "cfu": 24, "voto": null, "data": null,          "status": "todo", "anno": 2 },
+  { "nome": "Work Skills Activity",           "cfu": 1,  "voto": null, "data": null,          "status": "todo", "anno": 2, "tipo": "idoneita" }
 ]

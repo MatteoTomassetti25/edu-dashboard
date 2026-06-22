@@ -17,14 +17,15 @@
     --red:    #dc2626;
     --blue:   #2563eb;
     --orange: #c2410c;
+    --purple: #7c3aed;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; min-height: 100vh; }
 
-  header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; }
+  header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
   .logo  { font-size: 13px; font-weight: 600; }
   .sub   { margin-top: 3px; color: var(--muted); font-size: 12px; }
-  .header-right { text-align: right; }
+  .header-right { text-align: right; flex-shrink: 0; }
   #clock { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   #sync-status { font-size: 11px; margin-top: 3px; }
   .sync-ok   { color: var(--green); }
@@ -40,6 +41,7 @@
   .yellow { color: var(--yellow); }
   .red    { color: var(--red); }
   .blue   { color: var(--blue); }
+  .purple { color: var(--purple); }
 
   .progress-bar  { height: 2px; background: var(--border); margin-top: 12px; }
   .progress-fill { height: 100%; background: var(--text); }
@@ -47,13 +49,27 @@
   .section       { padding: 24px 32px; }
   .section-title { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
 
-  .countdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .countdown-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .countdown-name { font-size: 12px; font-weight: 500; line-height: 1.4; }
-  .countdown-date { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .countdown-days { font-size: 28px; font-weight: 300; text-align: right; letter-spacing: -1px; }
+  /* Upcoming exams */
+  .countdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+  .countdown-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; position: relative; }
+  .countdown-remove { position: absolute; top: 8px; right: 10px; font-size: 14px; color: var(--muted); cursor: pointer; background: none; border: none; padding: 0; line-height: 1; }
+  .countdown-remove:hover { color: var(--red); }
+  .countdown-name { font-size: 12px; font-weight: 500; line-height: 1.4; padding-right: 16px; }
+  .countdown-date { font-size: 11px; color: var(--muted); margin-top: 4px; cursor: pointer; display: inline-block; }
+  .countdown-date:hover { text-decoration: underline; text-decoration-style: dashed; color: var(--text); }
+  .countdown-days { font-size: 28px; font-weight: 300; text-align: right; letter-spacing: -1px; white-space: nowrap; }
   .countdown-lbl  { font-size: 10px; color: var(--muted); text-align: right; }
+  .date-input { border: 1px solid var(--border); background: var(--bg); font-size: 11px; color: var(--text); font-family: inherit; border-radius: 3px; padding: 2px 6px; outline: none; margin-top: 4px; }
+  .date-input:focus { border-color: #888; }
+  .add-exam-row { display: flex; gap: 8px; align-items: center; }
+  .add-exam-row select { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-size: 12px; outline: none; }
+  .btn { padding: 7px 14px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg2); color: var(--text); font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .btn:hover { background: var(--faint); }
+  .no-exams { color: var(--muted); font-size: 12px; font-style: italic; padding: 4px 0 12px; }
+  .ntfy-bar { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); }
+  .ntfy-topic { font-family: monospace; background: var(--faint); padding: 2px 6px; border-radius: 3px; color: var(--text); font-size: 11px; }
 
+  /* Simulator */
   .sim-box   { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .sim-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
   .sim-field { margin-bottom: 16px; }
@@ -69,6 +85,7 @@
   .sim-result-row:last-child { border-bottom: none; }
   .sim-hint { font-size: 11px; color: var(--muted); margin-top: 10px; }
 
+  /* Projection */
   .proj-box  { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
   .proj-main { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
   .proj-val  { font-size: 36px; font-weight: 300; letter-spacing: -1px; }
@@ -83,6 +100,7 @@
   .proj-cell-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
   .proj-cell-val   { font-size: 15px; font-weight: 500; }
 
+  /* Table */
   table { width: 100%; border-collapse: collapse; }
   th  { text-align: left; color: var(--muted); font-size: 11px; font-weight: 400; padding: 6px 12px 8px; border-bottom: 1px solid var(--border); }
   td  { padding: 10px 12px; border-bottom: 1px solid var(--faint); vertical-align: middle; }
@@ -99,18 +117,33 @@
 
   .voto-cell { cursor: pointer; }
   .voto-cell:hover .voto-val { text-decoration: underline; text-decoration-style: dashed; }
-  .voto       { font-weight: 600; }
-  .note       { font-size: 11px; color: var(--muted); }
-  .edit-hint  { font-size: 10px; color: #bbb; margin-left: 4px; }
+  .voto      { font-weight: 600; }
+  .edit-hint { font-size: 10px; color: #bbb; margin-left: 4px; }
   .inline-input { width: 52px; padding: 2px 6px; border: 1px solid var(--border); border-radius: 3px; font-size: 13px; font-family: inherit; outline: none; background: var(--bg2); }
   .inline-input:focus { border-color: #888; }
 
-  .media-detail { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-  .media-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 16px; border-bottom: 1px solid var(--faint); font-size: 12px; }
-  .media-row:last-child { border-bottom: none; background: var(--faint); }
-
   footer { border-top: 1px solid var(--border); padding: 12px 32px; color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; }
+
   #loading { display: flex; align-items: center; justify-content: center; height: 60vh; color: var(--muted); font-size: 13px; }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .countdown-grid { grid-template-columns: 1fr; }
+    .sim-box { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    .section { padding: 16px 20px; }
+    footer { padding: 10px 20px; }
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; align-items: flex-start; }
+    .header-right { text-align: left; }
+    .proj-grid { grid-template-columns: 1fr; }
+    .add-exam-row { flex-direction: column; align-items: stretch; }
+    .btn { text-align: center; }
+    th, td { padding: 8px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -134,6 +167,14 @@
 <div class="section">
   <div class="section-title">Upcoming Exams</div>
   <div class="countdown-grid" id="countdowns"></div>
+  <div class="add-exam-row">
+    <select id="add-exam-sel"></select>
+    <button class="btn" id="btn-add-exam">+ Add</button>
+  </div>
+  <div class="ntfy-bar" id="ntfy-bar" style="display:none">
+    <span>Push notifications:</span>
+    <span class="ntfy-topic" id="ntfy-topic-label"></span>
+  </div>
 </div>
 
 <div class="section">
@@ -170,15 +211,10 @@
   <div class="section-title">Study Plan — click grade to edit · click badge to cycle status</div>
   <table>
     <thead>
-      <tr><th>Course</th><th>CFU</th><th>Grade</th><th>Date</th><th>Status</th><th>Notes</th></tr>
+      <tr><th>Course</th><th>CFU</th><th>Grade</th><th>Date</th><th>Status</th></tr>
     </thead>
     <tbody id="exam-table"></tbody>
   </table>
-</div>
-
-<div class="section">
-  <div class="section-title">Weighted Average Breakdown</div>
-  <div class="media-detail" id="media-detail"></div>
 </div>
 
 <footer>
@@ -194,10 +230,9 @@ let ESAMI  = [];
 const STATUS_CYCLE = ['todo', 'next', 'sent', 'wait', 'done'];
 const BADGE_LABEL  = { done:'Graded', wait:'Pending grade', sent:'Submitted', next:'Upcoming', todo:'Not done' };
 
-// effective CFU: supports per-exam override via special_cfu (e.g. lowest-grade weighting rules)
 const cfuEff = e => e.special_cfu || e.cfu;
+const isPassFail = e => e.tipo === 'idoneita' || e.cfu <= 1;
 
-// ── DATA I/O ──────────────────────────────────────────────────────────────────
 async function loadAll() {
   try {
     const [cr, dr] = await Promise.all([
@@ -240,9 +275,12 @@ function applyConfig() {
   document.getElementById('h-sub').textContent  =
     [CONFIG.matricola, CONFIG.degree, CONFIG.university].filter(Boolean).join(' · ');
   document.title = (CONFIG.student_name || 'Academic') + ' · Dashboard';
+  if (CONFIG.ntfy_topic) {
+    document.getElementById('ntfy-bar').style.display = 'flex';
+    document.getElementById('ntfy-topic-label').textContent = `ntfy.sh/${CONFIG.ntfy_topic}`;
+  }
 }
 
-// ── CALCOLI ───────────────────────────────────────────────────────────────────
 function calcMedia(extra = null) {
   const rows = ESAMI.filter(e => e.voto && (e.status === 'done' || e.status === 'wait'));
   const all  = extra ? [...rows, extra] : rows;
@@ -255,11 +293,12 @@ function cfuMaturati() {
   return ESAMI.filter(e => e.status === 'done' || e.status === 'wait').reduce((s, e) => s + e.cfu, 0);
 }
 
-function calcMediaUfficiale() {
-  const rows = ESAMI.filter(e => e.voto && e.status === 'done');
-  let sp = 0, sc = 0;
-  rows.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
-  return sc > 0 ? sp / sc : 0;
+function votoLaurea(media) {
+  if (media <= 0) return null;
+  const base = Math.round(media / 30 * 110);
+  const tot  = base + (CONFIG.thesis_bonus || 0);
+  if (tot >= 111) return '110L';
+  return String(Math.min(110, tot));
 }
 
 function daysTo(dateStr) {
@@ -270,20 +309,32 @@ function daysTo(dateStr) {
   return Math.ceil((t - n) / 86400000);
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
+function toInputDate(s) {
+  if (!s) return '';
+  const [d, m, y] = s.split('/');
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+function fromInputDate(s) {
+  if (!s) return null;
+  const [y, m, d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+
 function renderClock() {
   document.getElementById('clock').textContent =
     new Date().toLocaleDateString() + ' · ' + new Date().toLocaleTimeString();
 }
 
 function renderCards() {
-  const T    = CONFIG.target_media || 27;
-  const media   = calcMedia();
-  const mediaOff = calcMediaUfficiale();
-  const cfu  = cfuMaturati();
+  const T     = CONFIG.target_media || 27;
+  const media = calcMedia();
+  const cfu   = cfuMaturati();
   const total = CONFIG.total_cfu || 120;
   const delta = media - T;
   const pct   = Math.round(cfu / total * 100);
+  const vl    = votoLaurea(media);
+  const vlColor = vl === '110L' ? 'purple' : parseInt(vl) >= 108 ? 'green' : parseInt(vl) >= 104 ? 'yellow' : 'red';
   document.getElementById('cards').innerHTML = `
     <div class="card">
       <div class="card-label">Credits Earned</div>
@@ -293,59 +344,100 @@ function renderCards() {
     </div>
     <div class="card">
       <div class="card-label">Weighted Average</div>
-      <div class="card-value ${media >= T ? 'green' : 'yellow'}">${media.toFixed(2)}</div>
+      <div class="card-value ${media >= T ? 'green' : 'yellow'}">${media > 0 ? media.toFixed(2) : '—'}</div>
       <div class="card-sub">incl. pending grades · special weights applied</div>
     </div>
     <div class="card">
-      <div class="card-label">Official Average</div>
-      <div class="card-value ${mediaOff >= T ? 'green' : 'yellow'}">${mediaOff.toFixed(2)}</div>
-      <div class="card-sub">graded only</div>
+      <div class="card-label">Delta vs Target ${T}</div>
+      <div class="card-value ${delta >= 0 ? 'green' : 'red'}">${media > 0 ? (delta >= 0 ? '+' : '') + delta.toFixed(2) : '—'}</div>
+      <div class="card-sub">+${CONFIG.thesis_bonus || 0} thesis bonus → max grade</div>
     </div>
     <div class="card">
-      <div class="card-label">Delta vs Target ${T}</div>
-      <div class="card-value ${delta >= 0 ? 'green' : 'red'}">${delta >= 0 ? '+' : ''}${delta.toFixed(2)}</div>
-      <div class="card-sub">+${CONFIG.thesis_bonus || 0} thesis bonus → max grade</div>
+      <div class="card-label">Estimated Degree Grade</div>
+      <div class="card-value ${vlColor}">${vl ?? '—'}</div>
+      <div class="card-sub">base ${media > 0 ? Math.round(media/30*110) : '—'}/110 + ${CONFIG.thesis_bonus || 0} thesis</div>
     </div>`;
 }
 
 function renderCountdowns() {
-  const list = ESAMI.filter(e => e.status === 'next' || e.status === 'wait');
-  document.getElementById('countdowns').innerHTML = list.length ? list.map(e => {
-    const d = daysTo(e.data);
-    const c = d == null ? 'var(--muted)' : d <= 7 ? 'var(--red)' : d <= 21 ? 'var(--orange)' : 'var(--text)';
-    return `<div class="countdown-card">
-      <div>
-        <div class="countdown-name">${e.nome}</div>
-        <div class="countdown-date">${e.data || '—'} · ${e.cfu} CFU</div>
-      </div>
-      <div>
-        <div class="countdown-days" style="color:${c}">${d ?? '—'}</div>
-        <div class="countdown-lbl">days</div>
-      </div>
-    </div>`;
-  }).join('') : '<div style="color:var(--muted);font-size:12px">No upcoming exams.</div>';
+  const prossimi = ESAMI.filter(e => e.status === 'next' || e.status === 'wait');
+  const grid = document.getElementById('countdowns');
+
+  if (!prossimi.length) {
+    grid.innerHTML = '<div class="no-exams">No upcoming exams — add one below.</div>';
+  } else {
+    grid.innerHTML = prossimi.map(e => {
+      const d = daysTo(e.data);
+      const c = d == null ? 'var(--muted)' : d <= 7 ? 'var(--red)' : d <= 21 ? 'var(--orange)' : 'var(--text)';
+      return `<div class="countdown-card">
+        <button class="countdown-remove" data-nome="${encodeURIComponent(e.nome)}" title="Remove">×</button>
+        <div style="flex:1;min-width:0">
+          <div class="countdown-name">${e.nome}</div>
+          <div class="countdown-date" data-nome="${encodeURIComponent(e.nome)}">${e.data || '+ add date'} · ${e.cfu} CFU</div>
+        </div>
+        <div style="flex-shrink:0">
+          <div class="countdown-days" style="color:${c}">${d ?? '—'}</div>
+          <div class="countdown-lbl">days</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.countdown-date').forEach(el => {
+      el.addEventListener('click', () => {
+        const nome = decodeURIComponent(el.dataset.nome);
+        const exam = ESAMI.find(e => e.nome === nome);
+        const inp  = document.createElement('input');
+        inp.type = 'date'; inp.className = 'date-input'; inp.value = toInputDate(exam.data);
+        el.replaceWith(inp); inp.focus();
+        const commit = () => { if (inp.value) exam.data = fromInputDate(inp.value); saveData(); render(); };
+        inp.addEventListener('change', commit);
+        inp.addEventListener('blur', commit);
+        inp.addEventListener('keydown', ev => { if (ev.key === 'Escape') render(); });
+      });
+    });
+
+    grid.querySelectorAll('.countdown-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const nome = decodeURIComponent(btn.dataset.nome);
+        const exam = ESAMI.find(e => e.nome === nome);
+        if (exam) { exam.status = 'todo'; saveData(); render(); }
+      });
+    });
+  }
+
+  const aggiungibili = ESAMI.filter(e => e.status !== 'next' && e.status !== 'wait' && e.status !== 'done' && !isPassFail(e));
+  const sel = document.getElementById('add-exam-sel');
+  sel.innerHTML = aggiungibili.length
+    ? aggiungibili.map(e => `<option value="${encodeURIComponent(e.nome)}">${e.nome} (${e.cfu} CFU)</option>`).join('')
+    : '<option disabled>— all exams already listed —</option>';
+
+  document.getElementById('btn-add-exam').onclick = () => {
+    const nome = decodeURIComponent(sel.value);
+    const exam = ESAMI.find(e => e.nome === nome);
+    if (exam) { exam.status = 'next'; saveData(); render(); }
+  };
 }
 
 function renderTable() {
   const anni = [...new Set(ESAMI.map(e => e.anno || 1))].sort();
   let html = '';
   anni.forEach(anno => {
-    html += `<tr class="anno-row"><td colspan="6">Year ${anno}</td></tr>`;
+    html += `<tr class="anno-row"><td colspan="5">Year ${anno}</td></tr>`;
     ESAMI.filter(e => (e.anno || 1) === anno).forEach(e => {
       const idx = ESAMI.indexOf(e);
       const vc  = e.voto >= 27 ? 'green' : e.voto >= 24 ? 'yellow' : 'red';
       const sw  = e.special_cfu ? `<span style="font-size:10px;color:var(--orange)" title="special weight: ${e.special_cfu} CFU">*</span>` : '';
+      const votoCell = isPassFail(e)
+        ? `<span class="voto-val" style="color:var(--muted);font-style:italic">P/F</span>`
+        : e.voto
+          ? `<span class="voto voto-val ${vc}">${e.voto}</span><span class="edit-hint">✎</span>`
+          : `<span class="voto-val" style="color:var(--muted)">—</span><span class="edit-hint">✎</span>`;
       html += `<tr>
         <td>${e.nome}</td>
         <td style="color:var(--muted)">${e.cfu}${sw}</td>
-        <td class="voto-cell" data-idx="${idx}">
-          ${e.voto
-            ? `<span class="voto voto-val ${vc}">${e.voto}</span><span class="edit-hint">✎</span>`
-            : `<span class="voto-val" style="color:var(--muted)">—</span><span class="edit-hint">✎</span>`}
-        </td>
+        <td class="${isPassFail(e) ? '' : 'voto-cell'}" data-idx="${idx}">${votoCell}</td>
         <td style="color:var(--muted)">${e.data || '—'}</td>
         <td><span class="badge badge-${e.status}" data-idx="${idx}">${BADGE_LABEL[e.status]}</span></td>
-        <td><span class="note">${e.note || ''}</span></td>
       </tr>`;
     });
   });
@@ -355,7 +447,8 @@ function renderTable() {
     td.addEventListener('click', () => {
       const idx  = parseInt(td.dataset.idx);
       const exam = ESAMI[idx];
-      const inp  = document.createElement('input');
+      if (isPassFail(exam)) return;
+      const inp = document.createElement('input');
       inp.type = 'number'; inp.min = 18; inp.max = 30;
       inp.value = exam.voto || ''; inp.placeholder = '18–30'; inp.className = 'inline-input';
       td.innerHTML = ''; td.appendChild(inp); inp.focus();
@@ -383,31 +476,12 @@ function renderTable() {
   });
 }
 
-function renderMediaDetail() {
-  const rows = ESAMI.filter(e => e.voto && (e.status === 'done' || e.status === 'wait'));
-  const totalCfu = rows.reduce((s, e) => s + cfuEff(e), 0);
-  const media    = calcMedia();
-  const T        = CONFIG.target_media || 27;
-  let html = rows.map(e => `
-    <div class="media-row">
-      <span>${e.nome}</span>
-      <span style="color:var(--muted)">${e.voto} × ${cfuEff(e)} CFU${e.special_cfu ? ` <span style="color:var(--orange)">(orig. ${e.cfu})</span>` : ''}</span>
-      <span>${(e.voto * cfuEff(e)).toFixed(0)}</span>
-    </div>`).join('');
-  html += `<div class="media-row">
-    <span>Weighted average</span>
-    <span style="color:var(--muted)">÷ ${totalCfu} effective CFU</span>
-    <span style="font-weight:600" class="${media >= T ? 'green' : 'yellow'}">${media.toFixed(3)}</span>
-  </div>`;
-  document.getElementById('media-detail').innerHTML = html;
-}
-
 function renderProiezione() {
-  const T      = CONFIG.target_media || 27;
-  const done   = ESAMI.filter(e => e.voto);
+  const T    = CONFIG.target_media || 27;
+  const done = ESAMI.filter(e => e.voto);
   let sp = 0, sc = 0;
   done.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
-  const rem    = ESAMI.filter(e => !e.voto && e.cfu > 1); // skip 1-CFU pass/fail
+  const rem    = ESAMI.filter(e => !e.voto && !isPassFail(e));
   const remCFU = rem.reduce((s, e) => s + e.cfu, 0);
   const totEff = sc + remCFU;
   const needed = remCFU > 0 ? (T * totEff - sp) / remCFU : 0;
@@ -435,12 +509,14 @@ function renderProiezione() {
 
 function initSimulatore() {
   const sel = document.getElementById('sim-exam');
-  sel.innerHTML = ESAMI.filter(e => !e.voto).map(e =>
+  sel.innerHTML = ESAMI.filter(e => !e.voto && !isPassFail(e)).map(e =>
     `<option value="${e.nome}">${e.nome} (${e.cfu} CFU)</option>`).join('');
   updateSim();
   sel.onchange = updateSim;
-  const slider = document.getElementById('sim-grade');
-  slider.oninput = () => { document.getElementById('sim-grade-val').textContent = slider.value; updateSim(); };
+  document.getElementById('sim-grade').oninput = () => {
+    document.getElementById('sim-grade-val').textContent = document.getElementById('sim-grade').value;
+    updateSim();
+  };
 }
 
 function updateSim() {
@@ -452,13 +528,15 @@ function updateSim() {
   const cur   = calcMedia();
   const nuova = calcMedia({ ...exam, voto });
   const delta = nuova - cur, vsT = nuova - T;
+  const vl    = votoLaurea(nuova);
   document.getElementById('sim-new-media').textContent = nuova.toFixed(3);
   document.getElementById('sim-new-media').className =
     'sim-result-val ' + (nuova >= T ? 'green' : nuova > cur ? 'yellow' : 'red');
   document.getElementById('sim-rows').innerHTML = `
     <div class="sim-result-row"><span style="color:var(--muted)">Current average</span><span>${cur.toFixed(3)}</span></div>
     <div class="sim-result-row"><span style="color:var(--muted)">Change</span><span class="${delta >= 0 ? 'green' : 'red'}">${delta >= 0 ? '+' : ''}${delta.toFixed(3)}</span></div>
-    <div class="sim-result-row"><span style="color:var(--muted)">Delta vs target ${T}</span><span class="${vsT >= 0 ? 'green' : 'red'}">${vsT >= 0 ? '+' : ''}${vsT.toFixed(3)}</span></div>`;
+    <div class="sim-result-row"><span style="color:var(--muted)">Delta vs target ${T}</span><span class="${vsT >= 0 ? 'green' : 'red'}">${vsT >= 0 ? '+' : ''}${vsT.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Est. degree grade</span><span class="${vl === '110L' ? 'purple' : ''}">${vl ?? '—'}</span></div>`;
   document.getElementById('sim-hint').textContent =
     nuova >= T ? '✓ Above target.' : `Still ${(T - nuova).toFixed(3)} points below target.`;
 }
@@ -467,7 +545,6 @@ function render() {
   renderCards();
   renderCountdowns();
   renderTable();
-  renderMediaDetail();
   renderProiezione();
   initSimulatore();
   document.getElementById('last-update').textContent =

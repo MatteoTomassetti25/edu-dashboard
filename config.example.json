@@ -5,5 +5,6 @@
   "degree": "MSc Computer Science",
   "total_cfu": 120,
   "target_media": 27.3,
-  "thesis_bonus": 10
+  "thesis_bonus": 10,
+  "ntfy_topic": ""
 }

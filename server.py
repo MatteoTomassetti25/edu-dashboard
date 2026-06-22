@@ -7,6 +7,18 @@ PORT      = int(os.environ.get('PORT', 8800))
 WRITABLE  = {'data.json', 'config.json'}
 
 class Handler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path.split('?')[0].endswith('.html'):
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.end_headers()
+            path = self.translate_path(self.path)
+            with open(path, 'rb') as f:
+                self.wfile.write(f.read())
+        else:
+            super().do_GET()
+
     def do_POST(self):
         filename = self.path.lstrip('/')
         if filename not in WRITABLE:
