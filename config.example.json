@@ -1,0 +1,9 @@
+{
+  "student_name": "Mario Rossi",
+  "matricola": "123456",
+  "university": "University Name",
+  "degree": "MSc Computer Science",
+  "total_cfu": 120,
+  "target_media": 27.3,
+  "thesis_bonus": 10
+}

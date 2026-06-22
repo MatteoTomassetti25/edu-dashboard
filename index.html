@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Dashboard</title>
+<style>
+  :root {
+    --bg:     #f9f9f8;
+    --bg2:    #ffffff;
+    --border: #e8e8e5;
+    --text:   #1a1a1a;
+    --muted:  #999;
+    --faint:  #f2f2f0;
+    --green:  #16a34a;
+    --yellow: #b45309;
+    --red:    #dc2626;
+    --blue:   #2563eb;
+    --orange: #c2410c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; min-height: 100vh; }
+
+  header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; }
+  .logo  { font-size: 13px; font-weight: 600; }
+  .sub   { margin-top: 3px; color: var(--muted); font-size: 12px; }
+  .header-right { text-align: right; }
+  #clock { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  #sync-status { font-size: 11px; margin-top: 3px; }
+  .sync-ok   { color: var(--green); }
+  .sync-err  { color: var(--red); }
+  .sync-save { color: var(--blue); }
+
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+  .card { background: var(--bg2); padding: 20px 24px; }
+  .card-label { color: var(--muted); font-size: 11px; margin-bottom: 10px; }
+  .card-value { font-size: 26px; font-weight: 300; letter-spacing: -0.5px; }
+  .card-sub   { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .green  { color: var(--green); }
+  .yellow { color: var(--yellow); }
+  .red    { color: var(--red); }
+  .blue   { color: var(--blue); }
+
+  .progress-bar  { height: 2px; background: var(--border); margin-top: 12px; }
+  .progress-fill { height: 100%; background: var(--text); }
+
+  .section       { padding: 24px 32px; }
+  .section-title { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+  .countdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .countdown-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .countdown-name { font-size: 12px; font-weight: 500; line-height: 1.4; }
+  .countdown-date { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .countdown-days { font-size: 28px; font-weight: 300; text-align: right; letter-spacing: -1px; }
+  .countdown-lbl  { font-size: 10px; color: var(--muted); text-align: right; }
+
+  .sim-box   { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sim-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
+  .sim-field { margin-bottom: 16px; }
+  .sim-field:last-child { margin-bottom: 0; }
+  .field-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-size: 12px; outline: none; cursor: pointer; }
+  select:focus { border-color: #aaa; }
+  .grade-row  { display: flex; align-items: center; gap: 10px; }
+  input[type=range] { flex: 1; accent-color: var(--text); cursor: pointer; }
+  .grade-badge    { min-width: 36px; text-align: center; font-size: 18px; font-weight: 300; }
+  .sim-result-val { font-size: 36px; font-weight: 300; letter-spacing: -1px; margin: 8px 0 4px; }
+  .sim-result-row { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--faint); }
+  .sim-result-row:last-child { border-bottom: none; }
+  .sim-hint { font-size: 11px; color: var(--muted); margin-top: 10px; }
+
+  .proj-box  { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
+  .proj-main { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+  .proj-val  { font-size: 36px; font-weight: 300; letter-spacing: -1px; }
+  .proj-desc { font-size: 12px; color: var(--muted); }
+  .proj-bar-wrap   { margin-bottom: 16px; }
+  .proj-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .proj-bar        { height: 4px; background: var(--border); border-radius: 2px; position: relative; }
+  .proj-bar-fill   { height: 100%; border-radius: 2px; }
+  .proj-bar-marker { position: absolute; top: -4px; width: 2px; height: 12px; background: var(--text); border-radius: 1px; }
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-top: 12px; }
+  .proj-cell { background: var(--bg); padding: 10px 12px; }
+  .proj-cell-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .proj-cell-val   { font-size: 15px; font-weight: 500; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th  { text-align: left; color: var(--muted); font-size: 11px; font-weight: 400; padding: 6px 12px 8px; border-bottom: 1px solid var(--border); }
+  td  { padding: 10px 12px; border-bottom: 1px solid var(--faint); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--faint); }
+  .anno-row td { color: var(--muted); font-size: 11px; padding: 14px 12px 4px; border-bottom: none; }
+
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 500; cursor: pointer; user-select: none; }
+  .badge-done  { background: #dcfce7; color: var(--green); }
+  .badge-wait  { background: #fef3c7; color: var(--yellow); }
+  .badge-next  { background: #ffedd5; color: var(--orange); }
+  .badge-todo  { background: var(--faint); color: var(--muted); }
+  .badge-sent  { background: #dbeafe; color: var(--blue); }
+
+  .voto-cell { cursor: pointer; }
+  .voto-cell:hover .voto-val { text-decoration: underline; text-decoration-style: dashed; }
+  .voto       { font-weight: 600; }
+  .note       { font-size: 11px; color: var(--muted); }
+  .edit-hint  { font-size: 10px; color: #bbb; margin-left: 4px; }
+  .inline-input { width: 52px; padding: 2px 6px; border: 1px solid var(--border); border-radius: 3px; font-size: 13px; font-family: inherit; outline: none; background: var(--bg2); }
+  .inline-input:focus { border-color: #888; }
+
+  .media-detail { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .media-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 16px; border-bottom: 1px solid var(--faint); font-size: 12px; }
+  .media-row:last-child { border-bottom: none; background: var(--faint); }
+
+  footer { border-top: 1px solid var(--border); padding: 12px 32px; color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; }
+  #loading { display: flex; align-items: center; justify-content: center; height: 60vh; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div id="loading">Loading…</div>
+<div id="app" style="display:none">
+
+<header>
+  <div>
+    <div class="logo" id="h-name">Academic Status</div>
+    <div class="sub"  id="h-sub"></div>
+  </div>
+  <div class="header-right">
+    <div id="clock"></div>
+    <div id="sync-status"></div>
+  </div>
+</header>
+
+<div class="grid" id="cards"></div>
+
+<div class="section">
+  <div class="section-title">Upcoming Exams</div>
+  <div class="countdown-grid" id="countdowns"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Simulator — what if I get X?</div>
+  <div class="sim-box">
+    <div class="sim-panel">
+      <div class="sim-field">
+        <div class="field-label">Exam</div>
+        <select id="sim-exam"></select>
+      </div>
+      <div class="sim-field">
+        <div class="field-label">Hypothetical grade</div>
+        <div class="grade-row">
+          <input type="range" id="sim-grade" min="18" max="30" value="27">
+          <span class="grade-badge" id="sim-grade-val">27</span>
+        </div>
+      </div>
+    </div>
+    <div class="sim-panel">
+      <div class="field-label">Projected new average</div>
+      <div class="sim-result-val" id="sim-new-media">—</div>
+      <div id="sim-rows"></div>
+      <div class="sim-hint" id="sim-hint"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Graduation Projection</div>
+  <div class="proj-box" id="proj-box"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Study Plan — click grade to edit · click badge to cycle status</div>
+  <table>
+    <thead>
+      <tr><th>Course</th><th>CFU</th><th>Grade</th><th>Date</th><th>Status</th><th>Notes</th></tr>
+    </thead>
+    <tbody id="exam-table"></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">Weighted Average Breakdown</div>
+  <div class="media-detail" id="media-detail"></div>
+</div>
+
+<footer>
+  <span>edu-dashboard · <a href="https://github.com/cmdhro/edu-dashboard" style="color:inherit">github</a></span>
+  <span id="last-update"></span>
+</footer>
+
+</div><!-- #app -->
+
+<script>
+let CONFIG = {};
+let ESAMI  = [];
+const STATUS_CYCLE = ['todo', 'next', 'sent', 'wait', 'done'];
+const BADGE_LABEL  = { done:'Graded', wait:'Pending grade', sent:'Submitted', next:'Upcoming', todo:'Not done' };
+
+// effective CFU: supports per-exam override via special_cfu (e.g. lowest-grade weighting rules)
+const cfuEff = e => e.special_cfu || e.cfu;
+
+// ── DATA I/O ──────────────────────────────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [cr, dr] = await Promise.all([
+      fetch('config.json?' + Date.now()),
+      fetch('data.json?'   + Date.now())
+    ]);
+    CONFIG = await cr.json();
+    ESAMI  = await dr.json();
+    applyConfig();
+    setSyncStatus('ok', 'live');
+    render();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display     = 'block';
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Error loading data — is server.py running?';
+    setSyncStatus('err', 'load error');
+  }
+}
+
+async function saveData() {
+  setSyncStatus('save', 'saving…');
+  try {
+    await fetch('data.json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ESAMI, null, 2)
+    });
+    setSyncStatus('ok', 'saved');
+  } catch(e) { setSyncStatus('err', 'save error'); }
+}
+
+function setSyncStatus(type, msg) {
+  const el = document.getElementById('sync-status');
+  el.className = { ok:'sync-ok', err:'sync-err', save:'sync-save' }[type];
+  el.textContent = msg;
+}
+
+function applyConfig() {
+  document.getElementById('h-name').textContent = CONFIG.student_name || 'Academic Status';
+  document.getElementById('h-sub').textContent  =
+    [CONFIG.matricola, CONFIG.degree, CONFIG.university].filter(Boolean).join(' · ');
+  document.title = (CONFIG.student_name || 'Academic') + ' · Dashboard';
+}
+
+// ── CALCOLI ───────────────────────────────────────────────────────────────────
+function calcMedia(extra = null) {
+  const rows = ESAMI.filter(e => e.voto && (e.status === 'done' || e.status === 'wait'));
+  const all  = extra ? [...rows, extra] : rows;
+  let sp = 0, sc = 0;
+  all.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
+  return sc > 0 ? sp / sc : 0;
+}
+
+function cfuMaturati() {
+  return ESAMI.filter(e => e.status === 'done' || e.status === 'wait').reduce((s, e) => s + e.cfu, 0);
+}
+
+function calcMediaUfficiale() {
+  const rows = ESAMI.filter(e => e.voto && e.status === 'done');
+  let sp = 0, sc = 0;
+  rows.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
+  return sc > 0 ? sp / sc : 0;
+}
+
+function daysTo(dateStr) {
+  if (!dateStr) return null;
+  const [d, m, y] = dateStr.split('/').map(Number);
+  const t = new Date(y, m - 1, d), n = new Date();
+  n.setHours(0,0,0,0);
+  return Math.ceil((t - n) / 86400000);
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleDateString() + ' · ' + new Date().toLocaleTimeString();
+}
+
+function renderCards() {
+  const T    = CONFIG.target_media || 27;
+  const media   = calcMedia();
+  const mediaOff = calcMediaUfficiale();
+  const cfu  = cfuMaturati();
+  const total = CONFIG.total_cfu || 120;
+  const delta = media - T;
+  const pct   = Math.round(cfu / total * 100);
+  document.getElementById('cards').innerHTML = `
+    <div class="card">
+      <div class="card-label">Credits Earned</div>
+      <div class="card-value blue">${cfu} <span style="font-size:14px;color:var(--muted)">/ ${total}</span></div>
+      <div class="card-sub">${pct}% complete</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Weighted Average</div>
+      <div class="card-value ${media >= T ? 'green' : 'yellow'}">${media.toFixed(2)}</div>
+      <div class="card-sub">incl. pending grades · special weights applied</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Official Average</div>
+      <div class="card-value ${mediaOff >= T ? 'green' : 'yellow'}">${mediaOff.toFixed(2)}</div>
+      <div class="card-sub">graded only</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Delta vs Target ${T}</div>
+      <div class="card-value ${delta >= 0 ? 'green' : 'red'}">${delta >= 0 ? '+' : ''}${delta.toFixed(2)}</div>
+      <div class="card-sub">+${CONFIG.thesis_bonus || 0} thesis bonus → max grade</div>
+    </div>`;
+}
+
+function renderCountdowns() {
+  const list = ESAMI.filter(e => e.status === 'next' || e.status === 'wait');
+  document.getElementById('countdowns').innerHTML = list.length ? list.map(e => {
+    const d = daysTo(e.data);
+    const c = d == null ? 'var(--muted)' : d <= 7 ? 'var(--red)' : d <= 21 ? 'var(--orange)' : 'var(--text)';
+    return `<div class="countdown-card">
+      <div>
+        <div class="countdown-name">${e.nome}</div>
+        <div class="countdown-date">${e.data || '—'} · ${e.cfu} CFU</div>
+      </div>
+      <div>
+        <div class="countdown-days" style="color:${c}">${d ?? '—'}</div>
+        <div class="countdown-lbl">days</div>
+      </div>
+    </div>`;
+  }).join('') : '<div style="color:var(--muted);font-size:12px">No upcoming exams.</div>';
+}
+
+function renderTable() {
+  const anni = [...new Set(ESAMI.map(e => e.anno || 1))].sort();
+  let html = '';
+  anni.forEach(anno => {
+    html += `<tr class="anno-row"><td colspan="6">Year ${anno}</td></tr>`;
+    ESAMI.filter(e => (e.anno || 1) === anno).forEach(e => {
+      const idx = ESAMI.indexOf(e);
+      const vc  = e.voto >= 27 ? 'green' : e.voto >= 24 ? 'yellow' : 'red';
+      const sw  = e.special_cfu ? `<span style="font-size:10px;color:var(--orange)" title="special weight: ${e.special_cfu} CFU">*</span>` : '';
+      html += `<tr>
+        <td>${e.nome}</td>
+        <td style="color:var(--muted)">${e.cfu}${sw}</td>
+        <td class="voto-cell" data-idx="${idx}">
+          ${e.voto
+            ? `<span class="voto voto-val ${vc}">${e.voto}</span><span class="edit-hint">✎</span>`
+            : `<span class="voto-val" style="color:var(--muted)">—</span><span class="edit-hint">✎</span>`}
+        </td>
+        <td style="color:var(--muted)">${e.data || '—'}</td>
+        <td><span class="badge badge-${e.status}" data-idx="${idx}">${BADGE_LABEL[e.status]}</span></td>
+        <td><span class="note">${e.note || ''}</span></td>
+      </tr>`;
+    });
+  });
+  document.getElementById('exam-table').innerHTML = html;
+
+  document.querySelectorAll('.voto-cell').forEach(td => {
+    td.addEventListener('click', () => {
+      const idx  = parseInt(td.dataset.idx);
+      const exam = ESAMI[idx];
+      const inp  = document.createElement('input');
+      inp.type = 'number'; inp.min = 18; inp.max = 30;
+      inp.value = exam.voto || ''; inp.placeholder = '18–30'; inp.className = 'inline-input';
+      td.innerHTML = ''; td.appendChild(inp); inp.focus();
+      const commit = () => {
+        const v = inp.value.trim();
+        exam.voto = v === '' ? null : Math.min(30, Math.max(18, parseInt(v)));
+        if (exam.voto && exam.status === 'todo') exam.status = 'wait';
+        if (exam.voto && exam.status === 'next') exam.status = 'done';
+        if (!exam.voto && exam.status === 'done') exam.status = 'todo';
+        saveData(); render();
+      };
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') render(); });
+      inp.addEventListener('blur', commit);
+    });
+  });
+
+  document.querySelectorAll('.badge[data-idx]').forEach(badge => {
+    badge.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const idx = parseInt(badge.dataset.idx);
+      const cur = STATUS_CYCLE.indexOf(ESAMI[idx].status);
+      ESAMI[idx].status = STATUS_CYCLE[(cur + 1) % STATUS_CYCLE.length];
+      saveData(); render();
+    });
+  });
+}
+
+function renderMediaDetail() {
+  const rows = ESAMI.filter(e => e.voto && (e.status === 'done' || e.status === 'wait'));
+  const totalCfu = rows.reduce((s, e) => s + cfuEff(e), 0);
+  const media    = calcMedia();
+  const T        = CONFIG.target_media || 27;
+  let html = rows.map(e => `
+    <div class="media-row">
+      <span>${e.nome}</span>
+      <span style="color:var(--muted)">${e.voto} × ${cfuEff(e)} CFU${e.special_cfu ? ` <span style="color:var(--orange)">(orig. ${e.cfu})</span>` : ''}</span>
+      <span>${(e.voto * cfuEff(e)).toFixed(0)}</span>
+    </div>`).join('');
+  html += `<div class="media-row">
+    <span>Weighted average</span>
+    <span style="color:var(--muted)">÷ ${totalCfu} effective CFU</span>
+    <span style="font-weight:600" class="${media >= T ? 'green' : 'yellow'}">${media.toFixed(3)}</span>
+  </div>`;
+  document.getElementById('media-detail').innerHTML = html;
+}
+
+function renderProiezione() {
+  const T      = CONFIG.target_media || 27;
+  const done   = ESAMI.filter(e => e.voto);
+  let sp = 0, sc = 0;
+  done.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
+  const rem    = ESAMI.filter(e => !e.voto && e.cfu > 1); // skip 1-CFU pass/fail
+  const remCFU = rem.reduce((s, e) => s + e.cfu, 0);
+  const totEff = sc + remCFU;
+  const needed = remCFU > 0 ? (T * totEff - sp) / remCFU : 0;
+  const color  = needed > 30 ? 'var(--red)' : needed <= T ? 'var(--green)' : needed <= 29 ? 'var(--yellow)' : 'var(--orange)';
+  const cur    = calcMedia();
+  document.getElementById('proj-box').innerHTML = `
+    <div class="proj-main">
+      <div class="proj-val" style="color:${color}">${needed > 0 && needed <= 30 ? needed.toFixed(2) : needed > 30 ? '✗' : '—'}</div>
+      <div class="proj-desc">minimum uniform average across the next ${rem.length} exams (${remCFU} CFU)<br>to reach your target of ${T}</div>
+    </div>
+    <div class="proj-bar-wrap">
+      <div class="proj-bar-labels"><span>18</span><span>target ${T}</span><span>30</span></div>
+      <div class="proj-bar">
+        <div class="proj-bar-fill" style="width:${Math.min(100,(needed/30)*100)}%;background:${color}"></div>
+        <div class="proj-bar-marker" style="left:${(cur/30)*100}%" title="current avg ${cur.toFixed(2)}"></div>
+      </div>
+    </div>
+    <div class="proj-grid">
+      <div class="proj-cell"><div class="proj-cell-label">CFU with grade</div><div class="proj-cell-val blue">${sc} <span style="font-size:11px;font-weight:400;color:var(--muted)">/ ${totEff}</span></div></div>
+      <div class="proj-cell"><div class="proj-cell-label">Current avg</div><div class="proj-cell-val ${cur >= T ? 'green' : 'yellow'}">${cur.toFixed(2)}</div></div>
+      <div class="proj-cell"><div class="proj-cell-label">Margin below 30</div><div class="proj-cell-val ${30-needed >= 1 ? 'green' : 'red'}">${needed <= 30 ? (30-needed).toFixed(2) : '✗'}</div></div>
+    </div>
+    ${needed > 30 ? `<div style="margin-top:12px;font-size:12px;color:var(--red)">Target unreachable through grades alone — consider revising your target.</div>` : ''}`;
+}
+
+function initSimulatore() {
+  const sel = document.getElementById('sim-exam');
+  sel.innerHTML = ESAMI.filter(e => !e.voto).map(e =>
+    `<option value="${e.nome}">${e.nome} (${e.cfu} CFU)</option>`).join('');
+  updateSim();
+  sel.onchange = updateSim;
+  const slider = document.getElementById('sim-grade');
+  slider.oninput = () => { document.getElementById('sim-grade-val').textContent = slider.value; updateSim(); };
+}
+
+function updateSim() {
+  const T    = CONFIG.target_media || 27;
+  const nome = document.getElementById('sim-exam').value;
+  const voto = parseInt(document.getElementById('sim-grade').value);
+  const exam = ESAMI.find(e => e.nome === nome);
+  if (!exam) return;
+  const cur   = calcMedia();
+  const nuova = calcMedia({ ...exam, voto });
+  const delta = nuova - cur, vsT = nuova - T;
+  document.getElementById('sim-new-media').textContent = nuova.toFixed(3);
+  document.getElementById('sim-new-media').className =
+    'sim-result-val ' + (nuova >= T ? 'green' : nuova > cur ? 'yellow' : 'red');
+  document.getElementById('sim-rows').innerHTML = `
+    <div class="sim-result-row"><span style="color:var(--muted)">Current average</span><span>${cur.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Change</span><span class="${delta >= 0 ? 'green' : 'red'}">${delta >= 0 ? '+' : ''}${delta.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Delta vs target ${T}</span><span class="${vsT >= 0 ? 'green' : 'red'}">${vsT >= 0 ? '+' : ''}${vsT.toFixed(3)}</span></div>`;
+  document.getElementById('sim-hint').textContent =
+    nuova >= T ? '✓ Above target.' : `Still ${(T - nuova).toFixed(3)} points below target.`;
+}
+
+function render() {
+  renderCards();
+  renderCountdowns();
+  renderTable();
+  renderMediaDetail();
+  renderProiezione();
+  initSimulatore();
+  document.getElementById('last-update').textContent =
+    'updated ' + new Date().toLocaleTimeString();
+}
+
+renderClock();
+setInterval(renderClock, 1000);
+setInterval(loadAll, 30000);
+loadAll();
+</script>
+</body>
+</html>

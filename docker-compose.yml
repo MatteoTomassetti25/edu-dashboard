@@ -1,0 +1,10 @@
+services:
+  dashboard:
+    image: python:3-slim
+    command: python /app/server.py
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "${PORT:-8800}:8800"
+    restart: unless-stopped
