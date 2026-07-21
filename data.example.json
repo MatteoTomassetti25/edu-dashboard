@@ -4,6 +4,6 @@
   { "nome": "Machine Learning",               "cfu": 9,  "voto": null, "data": "15/07/2025", "status": "next", "anno": 1 },
   { "nome": "Computer Networks",              "cfu": 6,  "voto": null, "data": null,          "status": "todo", "anno": 1 },
   { "nome": "Distributed Systems",            "cfu": 6,  "voto": null, "data": null,          "status": "todo", "anno": 2 },
-  { "nome": "Master Thesis",                  "cfu": 24, "voto": null, "data": null,          "status": "todo", "anno": 2 },
+  { "nome": "Master Thesis",                  "cfu": 24, "voto": null, "data": null,          "status": "todo", "anno": 2, "tipo": "tesi" },
   { "nome": "Work Skills Activity",           "cfu": 1,  "voto": null, "data": null,          "status": "todo", "anno": 2, "tipo": "idoneita" }
 ]

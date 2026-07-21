@@ -1,200 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Academic Dashboard</title>
+<title>Anton · Academic</title>
 <style>
   :root {
-    --bg:     #f9f9f8;
-    --bg2:    #ffffff;
-    --border: #e8e8e5;
-    --text:   #1a1a1a;
-    --muted:  #999;
-    --faint:  #f2f2f0;
-    --green:  #16a34a;
-    --yellow: #b45309;
-    --red:    #dc2626;
-    --blue:   #2563eb;
-    --orange: #c2410c;
-    --purple: #7c3aed;
+    --bg:#f9f9f8; --bg2:#ffffff; --border:#e8e8e5; --text:#1a1a1a; --muted:#999; --faint:#f2f2f0;
+    --green:#16a34a; --yellow:#b45309; --red:#dc2626; --blue:#2563eb; --orange:#c2410c; --purple:#7c3aed;
+  }
+  :root[data-theme="dark"] {
+    --bg:#0e0e0d; --bg2:#1a1a19; --border:#2a2a28; --text:#e5e5e2; --muted:#777; --faint:#232320;
+    --green:#4ade80; --yellow:#facc15; --red:#f87171; --blue:#60a5fa; --orange:#fb923c; --purple:#a78bfa;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; min-height: 100vh; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; min-height:100vh; }
 
-  header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-  .logo  { font-size: 13px; font-weight: 600; }
-  .sub   { margin-top: 3px; color: var(--muted); font-size: 12px; }
-  .header-right { text-align: right; flex-shrink: 0; }
-  #clock { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-  #sync-status { font-size: 11px; margin-top: 3px; }
-  .sync-ok   { color: var(--green); }
-  .sync-err  { color: var(--red); }
-  .sync-save { color: var(--blue); }
+  header { padding:28px 32px 20px; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+  .logo { font-size:13px; font-weight:600; letter-spacing:.5px; }
+  .sub  { margin-top:3px; color:var(--muted); font-size:12px; }
+  .header-right { text-align:right; flex-shrink:0; display:flex; align-items:center; gap:14px; }
+  #clock { color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+  #sync-status { font-size:11px; }
+  .sync-ok { color:var(--green); } .sync-err { color:var(--red); } .sync-save { color:var(--blue); }
+  .theme-toggle { border:1px solid var(--border); background:var(--bg2); color:var(--text); cursor:pointer; font-size:14px; padding:4px 8px; border-radius:4px; line-height:1; }
 
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
-  .card { background: var(--bg2); padding: 20px 24px; }
-  .card-label { color: var(--muted); font-size: 11px; margin-bottom: 10px; }
-  .card-value { font-size: 26px; font-weight: 300; letter-spacing: -0.5px; }
-  .card-sub   { color: var(--muted); font-size: 11px; margin-top: 4px; }
-  .green  { color: var(--green); }
-  .yellow { color: var(--yellow); }
-  .red    { color: var(--red); }
-  .blue   { color: var(--blue); }
-  .purple { color: var(--purple); }
+  .grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--border); border-bottom:1px solid var(--border); }
+  .card { background:var(--bg2); padding:20px 24px; }
+  .card-label { color:var(--muted); font-size:11px; margin-bottom:10px; }
+  .card-value { font-size:26px; font-weight:300; letter-spacing:-0.5px; }
+  .card-sub { color:var(--muted); font-size:11px; margin-top:4px; }
+  .green{color:var(--green);} .yellow{color:var(--yellow);} .red{color:var(--red);} .blue{color:var(--blue);} .purple{color:var(--purple);}
 
-  .progress-bar  { height: 2px; background: var(--border); margin-top: 12px; }
-  .progress-fill { height: 100%; background: var(--text); }
+  .progress-bar { height:2px; background:var(--border); margin-top:12px; }
+  .progress-fill { height:100%; background:var(--text); }
 
-  .section       { padding: 24px 32px; }
-  .section-title { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+  .section { padding:24px 32px; }
+  .section-title { font-size:11px; color:var(--muted); margin-bottom:16px; letter-spacing:.3px; }
 
-  /* Upcoming exams */
-  .countdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
-  .countdown-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; position: relative; }
-  .countdown-remove { position: absolute; top: 8px; right: 10px; font-size: 14px; color: var(--muted); cursor: pointer; background: none; border: none; padding: 0; line-height: 1; }
-  .countdown-remove:hover { color: var(--red); }
-  .countdown-name { font-size: 12px; font-weight: 500; line-height: 1.4; padding-right: 16px; }
-  .countdown-date { font-size: 11px; color: var(--muted); margin-top: 4px; cursor: pointer; display: inline-block; }
-  .countdown-date:hover { text-decoration: underline; text-decoration-style: dashed; color: var(--text); }
-  .countdown-days { font-size: 28px; font-weight: 300; text-align: right; letter-spacing: -1px; white-space: nowrap; }
-  .countdown-lbl  { font-size: 10px; color: var(--muted); text-align: right; }
-  .date-input { border: 1px solid var(--border); background: var(--bg); font-size: 11px; color: var(--text); font-family: inherit; border-radius: 3px; padding: 2px 6px; outline: none; margin-top: 4px; }
-  .date-input:focus { border-color: #888; }
-  .add-exam-row { display: flex; gap: 8px; align-items: center; }
-  .add-exam-row select { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-size: 12px; outline: none; }
-  .btn { padding: 7px 14px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg2); color: var(--text); font-size: 12px; cursor: pointer; white-space: nowrap; }
-  .btn:hover { background: var(--faint); }
-  .no-exams { color: var(--muted); font-size: 12px; font-style: italic; padding: 4px 0 12px; }
-  .ntfy-bar { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); }
-  .ntfy-topic { font-family: monospace; background: var(--faint); padding: 2px 6px; border-radius: 3px; color: var(--text); font-size: 11px; }
+  .countdown-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; }
+  .countdown-card { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:14px 16px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; position:relative; }
+  .countdown-remove { position:absolute; top:8px; right:10px; font-size:14px; color:var(--muted); cursor:pointer; background:none; border:none; padding:0; line-height:1; }
+  .countdown-remove:hover { color:var(--red); }
+  .countdown-name { font-size:12px; font-weight:500; line-height:1.4; padding-right:16px; }
+  .countdown-date { font-size:11px; color:var(--muted); margin-top:4px; cursor:pointer; display:inline-block; }
+  .countdown-date:hover { text-decoration:underline; text-decoration-style:dashed; color:var(--text); }
+  .countdown-days { font-size:28px; font-weight:300; text-align:right; letter-spacing:-1px; white-space:nowrap; }
+  .countdown-lbl { font-size:10px; color:var(--muted); text-align:right; }
+  .date-input { border:1px solid var(--border); background:var(--bg); font-size:11px; color:var(--text); font-family:inherit; border-radius:3px; padding:2px 6px; outline:none; margin-top:4px; }
+  .date-input:focus { border-color:#888; }
 
-  /* Simulator */
-  .sim-box   { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .sim-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
-  .sim-field { margin-bottom: 16px; }
-  .sim-field:last-child { margin-bottom: 0; }
-  .field-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-  select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-size: 12px; outline: none; cursor: pointer; }
-  select:focus { border-color: #aaa; }
-  .grade-row  { display: flex; align-items: center; gap: 10px; }
-  input[type=range] { flex: 1; accent-color: var(--text); cursor: pointer; }
-  .grade-badge    { min-width: 36px; text-align: center; font-size: 18px; font-weight: 300; }
-  .sim-result-val { font-size: 36px; font-weight: 300; letter-spacing: -1px; margin: 8px 0 4px; }
-  .sim-result-row { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--faint); }
-  .sim-result-row:last-child { border-bottom: none; }
-  .sim-hint { font-size: 11px; color: var(--muted); margin-top: 10px; }
+  .sim-box { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .sim-panel { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:20px; }
+  .sim-entry { padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--faint); }
+  .sim-entry:last-of-type { border-bottom:none; }
+  .sim-entry-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .sim-remove { border:none; background:none; color:var(--red); cursor:pointer; font-size:16px; padding:0 4px; line-height:1; }
+  .field-label { font-size:11px; color:var(--muted); margin-bottom:6px; }
+  select { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text); font-size:12px; outline:none; cursor:pointer; }
+  select:focus { border-color:#aaa; }
+  .grade-row { display:flex; align-items:center; gap:10px; margin-top:6px; }
+  input[type=range] { flex:1; accent-color:var(--text); cursor:pointer; }
+  .grade-badge { min-width:36px; text-align:center; font-size:18px; font-weight:300; }
+  .btn { padding:7px 14px; border:1px solid var(--border); border-radius:4px; background:var(--bg2); color:var(--text); font-size:12px; cursor:pointer; }
+  .btn:hover { background:var(--faint); }
+  .sim-result-val { font-size:36px; font-weight:300; letter-spacing:-1px; margin:8px 0 4px; }
+  .sim-result-row { display:flex; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px solid var(--faint); }
+  .sim-result-row:last-child { border-bottom:none; }
+  .sim-hint { font-size:11px; color:var(--muted); margin-top:10px; }
 
-  /* Projection */
-  .proj-box  { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
-  .proj-main { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
-  .proj-val  { font-size: 36px; font-weight: 300; letter-spacing: -1px; }
-  .proj-desc { font-size: 12px; color: var(--muted); }
-  .proj-bar-wrap   { margin-bottom: 16px; }
-  .proj-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-  .proj-bar        { height: 4px; background: var(--border); border-radius: 2px; position: relative; }
-  .proj-bar-fill   { height: 100%; border-radius: 2px; }
-  .proj-bar-marker { position: absolute; top: -4px; width: 2px; height: 12px; background: var(--text); border-radius: 1px; }
-  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-top: 12px; }
-  .proj-cell { background: var(--bg); padding: 10px 12px; }
-  .proj-cell-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-  .proj-cell-val   { font-size: 15px; font-weight: 500; }
+  .proj-box { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:20px; }
+  .proj-main { display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
+  .proj-val { font-size:36px; font-weight:300; letter-spacing:-1px; }
+  .proj-desc { font-size:12px; color:var(--muted); }
+  .proj-bar-wrap { margin-bottom:16px; }
+  .proj-bar-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-bottom:4px; }
+  .proj-bar { height:4px; background:var(--border); border-radius:2px; position:relative; }
+  .proj-bar-fill { height:100%; border-radius:2px; }
+  .proj-bar-marker { position:absolute; top:-4px; width:2px; height:12px; background:var(--text); border-radius:1px; }
+  .proj-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-top:12px; }
+  .proj-cell { background:var(--bg); padding:10px 12px; }
+  .proj-cell-label { font-size:10px; color:var(--muted); margin-bottom:4px; }
+  .proj-cell-val { font-size:15px; font-weight:500; }
 
-  /* Table */
-  table { width: 100%; border-collapse: collapse; }
-  th  { text-align: left; color: var(--muted); font-size: 11px; font-weight: 400; padding: 6px 12px 8px; border-bottom: 1px solid var(--border); }
-  td  { padding: 10px 12px; border-bottom: 1px solid var(--faint); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--faint); }
-  .anno-row td { color: var(--muted); font-size: 11px; padding: 14px 12px 4px; border-bottom: none; }
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th  { text-align:left; color:var(--muted); font-size:11px; font-weight:400; padding:6px 12px 8px; border-bottom:1px solid var(--border); }
+  td  { padding:10px 12px; border-bottom:1px solid var(--faint); vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:var(--faint); }
+  .anno-row td { color:var(--muted); font-size:11px; padding:14px 12px 4px; border-bottom:none; letter-spacing:.3px; }
 
-  .badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 500; cursor: pointer; user-select: none; }
-  .badge-done  { background: #dcfce7; color: var(--green); }
-  .badge-wait  { background: #fef3c7; color: var(--yellow); }
-  .badge-next  { background: #ffedd5; color: var(--orange); }
-  .badge-todo  { background: var(--faint); color: var(--muted); }
-  .badge-sent  { background: #dbeafe; color: var(--blue); }
+  .badge { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:500; cursor:pointer; user-select:none; }
+  .badge-done { background:color-mix(in srgb, var(--green) 22%, transparent); color:var(--green); }
+  .badge-wait { background:color-mix(in srgb, var(--yellow) 22%, transparent); color:var(--yellow); }
+  .badge-next { background:color-mix(in srgb, var(--orange) 22%, transparent); color:var(--orange); }
+  .badge-todo { background:var(--faint); color:var(--muted); }
+  .badge-sent { background:color-mix(in srgb, var(--blue) 22%, transparent); color:var(--blue); }
 
-  .voto-cell { cursor: pointer; }
-  .voto-cell:hover .voto-val { text-decoration: underline; text-decoration-style: dashed; }
-  .voto      { font-weight: 600; }
-  .edit-hint { font-size: 10px; color: #bbb; margin-left: 4px; }
-  .inline-input { width: 52px; padding: 2px 6px; border: 1px solid var(--border); border-radius: 3px; font-size: 13px; font-family: inherit; outline: none; background: var(--bg2); }
-  .inline-input:focus { border-color: #888; }
+  .voto-cell { cursor:pointer; }
+  .voto-cell.locked { cursor:not-allowed; }
+  .voto-cell:not(.locked):hover .voto-val { text-decoration:underline; text-decoration-style:dashed; }
+  .voto { font-weight:600; }
+  .edit-hint { font-size:10px; color:var(--muted); margin-left:4px; opacity:.5; }
+  .lock-hint { font-size:10px; margin-right:4px; }
+  .inline-input { width:64px; padding:2px 6px; border:1px solid var(--border); border-radius:3px; font-size:13px; font-family:inherit; outline:none; background:var(--bg2); color:var(--text); }
+  .inline-input:focus { border-color:#888; }
 
-  footer { border-top: 1px solid var(--border); padding: 12px 32px; color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; }
+  footer { border-top:1px solid var(--border); padding:12px 32px; color:var(--muted); font-size:11px; display:flex; justify-content:space-between; }
 
-  #loading { display: flex; align-items: center; justify-content: center; height: 60vh; color: var(--muted); font-size: 13px; }
-
-  /* Mobile */
   @media (max-width: 768px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
-    .countdown-grid { grid-template-columns: 1fr; }
-    .sim-box { grid-template-columns: 1fr; }
-    header { padding: 20px; }
-    .section { padding: 16px 20px; }
-    footer { padding: 10px 20px; }
+    .grid { grid-template-columns:repeat(2, 1fr); }
+    .countdown-grid { grid-template-columns:1fr; }
+    .sim-box { grid-template-columns:1fr; }
+    header, .section, footer { padding-left:20px; padding-right:20px; }
   }
   @media (max-width: 480px) {
-    .grid { grid-template-columns: 1fr; }
-    header { flex-direction: column; align-items: flex-start; }
-    .header-right { text-align: left; }
-    .proj-grid { grid-template-columns: 1fr; }
-    .add-exam-row { flex-direction: column; align-items: stretch; }
-    .btn { text-align: center; }
-    th, td { padding: 8px; font-size: 12px; }
+    .grid { grid-template-columns:1fr; }
+    header { flex-direction:column; align-items:flex-start; }
+    .header-right { text-align:left; }
+    .proj-grid { grid-template-columns:1fr; }
   }
 </style>
 </head>
 <body>
 
-<div id="loading">Loading…</div>
-<div id="app" style="display:none">
-
 <header>
   <div>
     <div class="logo" id="h-name">Academic Status</div>
-    <div class="sub"  id="h-sub"></div>
+    <div class="sub" id="h-sub"></div>
   </div>
   <div class="header-right">
-    <div id="clock"></div>
-    <div id="sync-status"></div>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle tema">◐</button>
+    <div>
+      <div id="clock"></div>
+      <div id="sync-status"></div>
+    </div>
   </div>
 </header>
 
 <div class="grid" id="cards"></div>
 
 <div class="section">
-  <div class="section-title">Upcoming Exams</div>
+  <div class="section-title">Prossimi Esami</div>
   <div class="countdown-grid" id="countdowns"></div>
-  <div class="add-exam-row">
-    <select id="add-exam-sel"></select>
-    <button class="btn" id="btn-add-exam">+ Add</button>
-  </div>
-  <div class="ntfy-bar" id="ntfy-bar" style="display:none">
-    <span>Push notifications:</span>
-    <span class="ntfy-topic" id="ntfy-topic-label"></span>
-  </div>
 </div>
 
 <div class="section">
-  <div class="section-title">Simulator — what if I get X?</div>
+  <div class="section-title">Simulatore — se prendo X avrò Y · aggiungi più esami per predire la sessione</div>
   <div class="sim-box">
     <div class="sim-panel">
-      <div class="sim-field">
-        <div class="field-label">Exam</div>
-        <select id="sim-exam"></select>
-      </div>
-      <div class="sim-field">
-        <div class="field-label">Hypothetical grade</div>
-        <div class="grade-row">
-          <input type="range" id="sim-grade" min="18" max="30" value="27">
-          <span class="grade-badge" id="sim-grade-val">27</span>
-        </div>
-      </div>
+      <div id="sim-entries"></div>
+      <button class="btn" id="sim-add" style="margin-top:6px">+ Aggiungi esame</button>
     </div>
     <div class="sim-panel">
-      <div class="field-label">Projected new average</div>
+      <div class="field-label">Nuova media proiettata</div>
       <div class="sim-result-val" id="sim-new-media">—</div>
       <div id="sim-rows"></div>
       <div class="sim-hint" id="sim-hint"></div>
@@ -203,358 +163,501 @@
 </div>
 
 <div class="section">
-  <div class="section-title">Graduation Projection</div>
+  <div class="section-title">Proiezione 110L</div>
   <div class="proj-box" id="proj-box"></div>
 </div>
 
 <div class="section">
-  <div class="section-title">Study Plan — click grade to edit · click badge to cycle status</div>
-  <table>
-    <thead>
-      <tr><th>Course</th><th>CFU</th><th>Grade</th><th>Date</th><th>Status</th></tr>
-    </thead>
-    <tbody id="exam-table"></tbody>
-  </table>
+  <div class="section-title">Piano di Studi — click sul voto per editarlo · click sul badge per ciclare lo status</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Insegnamento</th><th>CFU</th><th>Voto</th><th>Data</th><th>Status</th><th>Note</th></tr>
+      </thead>
+      <tbody id="exam-table"></tbody>
+    </table>
+  </div>
 </div>
 
 <footer>
-  <span>edu-dashboard · <a href="https://github.com/MatteoTomassetti25/edu-dashboard" style="color:inherit">github</a></span>
+  <span>Anton · Protocol active</span>
   <span id="last-update"></span>
 </footer>
 
-</div><!-- #app -->
-
 <script>
-let CONFIG = {};
-let ESAMI  = [];
-const STATUS_CYCLE = ['todo', 'next', 'sent', 'wait', 'done'];
-const BADGE_LABEL  = { done:'Graded', wait:'Pending grade', sent:'Submitted', next:'Upcoming', todo:'Not done' };
+// ── Config ────────────────────────────────────────────────────────────────
+const TARGET_MEDIA = 27.3;
+const TOTAL_CFU    = 120;
+const BONUS_TESI   = 6;    // tesi+discussione, max 6 punti (regolamento)
+const PUNTI_LODE   = 0.5;  // stima — knob di taratura da verificare sul regolamento
+let   NTFY_TOPIC   = null; // caricato da config.json
+const STATUS_CYCLE = ["todo", "next", "sent", "wait", "done"];
+const BADGE_LABEL  = { done:"VERBALIZZATO", wait:"IN ATTESA VERB.", sent:"CONSEGNATO", next:"PROSSIMO", todo:"DA SOSTENERE" };
 
-const cfuEff = e => e.special_cfu || e.cfu;
-const isPassFail = e => e.tipo === 'idoneita' || e.cfu <= 1;
+let ESAMI = [];
+let editingCount = 0; // guardia auto-refresh: >0 = non ricaricare
 
-async function loadAll() {
+// ── Utility ──────────────────────────────────────────────────────────────
+const cfuEff     = e => e.special_cfu || e.cfu;
+const isEsame    = e => !e.tipo; // né tesi né idoneità
+const isDone     = e => e.status === "done";
+const isPassFail = e => e.tipo === "idoneita";
+
+function daysTo(dateStr) {
+  if (!dateStr) return null;
+  const [d, m, y] = dateStr.split("/").map(Number);
+  const t = new Date(y, m - 1, d), n = new Date(); n.setHours(0,0,0,0);
+  return Math.round((t - n) / 86400000);
+}
+function toInputDate(s) {
+  if (!s) return "";
+  const [d, m, y] = s.split("/");
+  return `${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
+}
+function fromInputDate(s) {
+  if (!s) return null;
+  const [y, m, d] = s.split("-");
+  if (!y || parseInt(y) < 2000) return null;
+  return `${d}/${m}/${y}`;
+}
+function fmtVoto(e) {
+  if (!e.voto) return null;
+  return e.lode ? "30L" : String(e.voto);
+}
+
+// ── Ntfy (stub-friendly) ─────────────────────────────────────────────────
+window.ntfySend = window.ntfySend || function(msg) {
+  if (!NTFY_TOPIC) return;
+  fetch(`https://ntfy.sh/${NTFY_TOPIC}`, { method:"POST", body:msg }).catch(() => {});
+};
+
+// ── Load / Save ──────────────────────────────────────────────────────────
+async function loadConfig() {
   try {
-    const [cr, dr] = await Promise.all([
-      fetch('config.json?' + Date.now()),
-      fetch('data.json?'   + Date.now())
-    ]);
-    CONFIG = await cr.json();
-    ESAMI  = await dr.json();
-    applyConfig();
-    setSyncStatus('ok', 'live');
+    const r = await fetch("config.json?" + Date.now());
+    if (!r.ok) return;
+    const c = await r.json();
+    if (c.student_name) document.getElementById("h-name").textContent = c.student_name;
+    document.getElementById("h-sub").textContent =
+      [c.matricola, c.degree, c.university].filter(Boolean).join(" · ");
+    if (c.ntfy_topic) NTFY_TOPIC = c.ntfy_topic;
+  } catch(e) { /* config opzionale */ }
+}
+
+async function loadData() {
+  try {
+    const r = await fetch("data.json?" + Date.now());
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    ESAMI = await r.json();
+    setSync("ok", "live");
     render();
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display     = 'block';
   } catch(e) {
-    document.getElementById('loading').textContent = 'Error loading data — is server.py running?';
-    setSyncStatus('err', 'load error');
+    setSync("err", "load error");
   }
 }
 
 async function saveData() {
-  setSyncStatus('save', 'saving…');
+  setSync("save", "saving…");
   try {
-    await fetch('data.json', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const r = await fetch("data.json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(ESAMI, null, 2)
     });
-    setSyncStatus('ok', 'saved');
-  } catch(e) { setSyncStatus('err', 'save error'); }
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    setSync("ok", "saved");
+  } catch(e) { setSync("err", "save error"); }
 }
 
-function setSyncStatus(type, msg) {
-  const el = document.getElementById('sync-status');
-  el.className = { ok:'sync-ok', err:'sync-err', save:'sync-save' }[type];
+function setSync(type, msg) {
+  const el = document.getElementById("sync-status");
+  el.className = { ok:"sync-ok", err:"sync-err", save:"sync-save" }[type];
   el.textContent = msg;
 }
 
-function applyConfig() {
-  document.getElementById('h-name').textContent = CONFIG.student_name || 'Academic Status';
-  document.getElementById('h-sub').textContent  =
-    [CONFIG.matricola, CONFIG.degree, CONFIG.university].filter(Boolean).join(' · ');
-  document.title = (CONFIG.student_name || 'Academic') + ' · Dashboard';
-  if (CONFIG.ntfy_topic) {
-    document.getElementById('ntfy-bar').style.display = 'flex';
-    document.getElementById('ntfy-topic-label').textContent = `ntfy.sh/${CONFIG.ntfy_topic}`;
-  }
-}
-
-function calcMedia(extra = null) {
-  const rows = ESAMI.filter(e => e.voto && (e.status === 'done' || e.status === 'wait'));
-  const all  = extra ? [...rows, extra] : rows;
+// ── Calcoli ──────────────────────────────────────────────────────────────
+function calcMedia(extras = []) {
+  const rows = ESAMI.filter(e => isEsame(e) && e.voto && (e.status === "done" || e.status === "wait"));
   let sp = 0, sc = 0;
-  all.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
+  [...rows, ...extras].forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
   return sc > 0 ? sp / sc : 0;
 }
-
-function cfuMaturati() {
-  return ESAMI.filter(e => e.status === 'done' || e.status === 'wait').reduce((s, e) => s + e.cfu, 0);
+function countLodi(extras = []) {
+  const base = ESAMI.filter(e => isEsame(e) && e.lode && (e.status === "done" || e.status === "wait")).length;
+  return base + extras.filter(e => e.lode).length;
 }
-
-function votoLaurea(media) {
+function cfuMaturati() {
+  return ESAMI.filter(e => e.status === "done" || e.status === "wait").reduce((s, e) => s + e.cfu, 0);
+}
+function votoLaurea(media, lodi = 0) {
   if (media <= 0) return null;
-  const base = Math.round(media / 30 * 110);
-  const tot  = base + (CONFIG.thesis_bonus || 0);
-  if (tot >= 111) return '110L';
+  const base = Math.round(media / 30 * 110 + lodi * PUNTI_LODE);
+  const tot  = base + BONUS_TESI;
+  if (tot >= 111) return "110L";
   return String(Math.min(110, tot));
 }
 
-function daysTo(dateStr) {
-  if (!dateStr) return null;
-  const [d, m, y] = dateStr.split('/').map(Number);
-  const t = new Date(y, m - 1, d), n = new Date();
-  n.setHours(0,0,0,0);
-  return Math.ceil((t - n) / 86400000);
-}
-
-function toInputDate(s) {
-  if (!s) return '';
-  const [d, m, y] = s.split('/');
-  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-}
-
-function fromInputDate(s) {
-  if (!s) return null;
-  const [y, m, d] = s.split('-');
-  return `${d}/${m}/${y}`;
-}
-
+// ── Render ───────────────────────────────────────────────────────────────
 function renderClock() {
-  document.getElementById('clock').textContent =
-    new Date().toLocaleDateString() + ' · ' + new Date().toLocaleTimeString();
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleDateString("it-IT") + " · " + now.toLocaleTimeString("it-IT");
 }
 
 function renderCards() {
-  const T     = CONFIG.target_media || 27;
   const media = calcMedia();
+  const lodi  = countLodi();
   const cfu   = cfuMaturati();
-  const total = CONFIG.total_cfu || 120;
-  const delta = media - T;
-  const pct   = Math.round(cfu / total * 100);
-  const vl    = votoLaurea(media);
-  const vlColor = vl === '110L' ? 'purple' : parseInt(vl) >= 108 ? 'green' : parseInt(vl) >= 104 ? 'yellow' : 'red';
-  document.getElementById('cards').innerHTML = `
+  const delta = media - TARGET_MEDIA;
+  const pct   = Math.round(cfu / TOTAL_CFU * 100);
+  const vl    = votoLaurea(media, lodi);
+  const vlColor = vl === "110L" ? "purple" : parseInt(vl) >= 108 ? "green" : parseInt(vl) >= 104 ? "yellow" : "red";
+
+  document.getElementById("cards").innerHTML = `
     <div class="card">
-      <div class="card-label">Credits Earned</div>
-      <div class="card-value blue">${cfu} <span style="font-size:14px;color:var(--muted)">/ ${total}</span></div>
-      <div class="card-sub">${pct}% complete</div>
+      <div class="card-label">CFU Maturati</div>
+      <div class="card-value blue">${cfu} <span style="font-size:14px;color:var(--muted)">/ ${TOTAL_CFU}</span></div>
+      <div class="card-sub">${pct}% completato</div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
     </div>
     <div class="card">
-      <div class="card-label">Weighted Average</div>
-      <div class="card-value ${media >= T ? 'green' : 'yellow'}">${media > 0 ? media.toFixed(2) : '—'}</div>
-      <div class="card-sub">incl. pending grades · special weights applied</div>
+      <div class="card-label">Media Ponderata</div>
+      <div class="card-value ${media >= TARGET_MEDIA ? 'green' : 'yellow'}">${media > 0 ? media.toFixed(2) : '—'}</div>
+      <div class="card-sub">incl. voti in attesa · pesi speciali applicati</div>
     </div>
     <div class="card">
-      <div class="card-label">Delta vs Target ${T}</div>
+      <div class="card-label">Delta vs Target ${TARGET_MEDIA}</div>
       <div class="card-value ${delta >= 0 ? 'green' : 'red'}">${media > 0 ? (delta >= 0 ? '+' : '') + delta.toFixed(2) : '—'}</div>
-      <div class="card-sub">+${CONFIG.thesis_bonus || 0} thesis bonus → max grade</div>
+      <div class="card-sub">+${BONUS_TESI} tesi+discussione (max)</div>
     </div>
     <div class="card">
-      <div class="card-label">Estimated Degree Grade</div>
+      <div class="card-label">Voto di Laurea Stimato</div>
       <div class="card-value ${vlColor}">${vl ?? '—'}</div>
-      <div class="card-sub">base ${media > 0 ? Math.round(media/30*110) : '—'}/110 + ${CONFIG.thesis_bonus || 0} thesis</div>
+      <div class="card-sub">base ${media > 0 ? Math.round(media/30*110 + lodi*PUNTI_LODE) : '—'}/110 + max ${BONUS_TESI} tesi${lodi ? ` · ${lodi}×L` : ''}</div>
     </div>`;
 }
 
 function renderCountdowns() {
-  const prossimi = ESAMI.filter(e => e.status === 'next' || e.status === 'wait');
-  const grid = document.getElementById('countdowns');
+  const prossimi = ESAMI
+    .filter(e => e.status === "next" || e.status === "wait")
+    .sort((a, b) => {
+      const da = daysTo(a.data), db = daysTo(b.data);
+      if (da == null) return 1;
+      if (db == null) return -1;
+      return da - db;
+    });
 
+  const grid = document.getElementById("countdowns");
   if (!prossimi.length) {
-    grid.innerHTML = '<div class="no-exams">No upcoming exams — add one below.</div>';
-  } else {
-    grid.innerHTML = prossimi.map(e => {
-      const d = daysTo(e.data);
-      const c = d == null ? 'var(--muted)' : d <= 7 ? 'var(--red)' : d <= 21 ? 'var(--orange)' : 'var(--text)';
-      return `<div class="countdown-card">
-        <button class="countdown-remove" data-nome="${encodeURIComponent(e.nome)}" title="Remove">×</button>
-        <div style="flex:1;min-width:0">
-          <div class="countdown-name">${e.nome}</div>
-          <div class="countdown-date" data-nome="${encodeURIComponent(e.nome)}">${e.data || '+ add date'} · ${e.cfu} CFU</div>
-        </div>
-        <div style="flex-shrink:0">
-          <div class="countdown-days" style="color:${c}">${d ?? '—'}</div>
-          <div class="countdown-lbl">days</div>
-        </div>
-      </div>`;
-    }).join('');
-
-    grid.querySelectorAll('.countdown-date').forEach(el => {
-      el.addEventListener('click', () => {
-        const nome = decodeURIComponent(el.dataset.nome);
-        const exam = ESAMI.find(e => e.nome === nome);
-        const inp  = document.createElement('input');
-        inp.type = 'date'; inp.className = 'date-input'; inp.value = toInputDate(exam.data);
-        el.replaceWith(inp); inp.focus();
-        const commit = () => { if (inp.value) exam.data = fromInputDate(inp.value); saveData(); render(); };
-        inp.addEventListener('change', commit);
-        inp.addEventListener('blur', commit);
-        inp.addEventListener('keydown', ev => { if (ev.key === 'Escape') render(); });
-      });
-    });
-
-    grid.querySelectorAll('.countdown-remove').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const nome = decodeURIComponent(btn.dataset.nome);
-        const exam = ESAMI.find(e => e.nome === nome);
-        if (exam) { exam.status = 'todo'; saveData(); render(); }
-      });
-    });
+    grid.innerHTML = '<div style="color:var(--muted);font-size:12px;font-style:italic">Nessun esame prossimo.</div>';
+    return;
   }
 
-  const aggiungibili = ESAMI.filter(e => e.status !== 'next' && e.status !== 'wait' && e.status !== 'done' && !isPassFail(e));
-  const sel = document.getElementById('add-exam-sel');
-  sel.innerHTML = aggiungibili.length
-    ? aggiungibili.map(e => `<option value="${encodeURIComponent(e.nome)}">${e.nome} (${e.cfu} CFU)</option>`).join('')
-    : '<option disabled>— all exams already listed —</option>';
+  grid.innerHTML = prossimi.map(e => {
+    const d = daysTo(e.data);
+    let bigLabel, bigVal, color;
+    if (d == null)      { bigVal = "—";  bigLabel = "no data"; color = "var(--muted)"; }
+    else if (d < 0)     { bigVal = "✓";  bigLabel = "svolto";  color = "var(--muted)"; }
+    else if (d === 0)   { bigVal = "•";  bigLabel = "oggi";    color = "var(--red)"; }
+    else {
+      bigVal = d; bigLabel = "giorni";
+      color = d <= 7 ? "var(--red)" : d <= 21 ? "var(--orange)" : "var(--text)";
+    }
+    const removable = e.status === "next";
+    return `<div class="countdown-card">
+      ${removable ? `<button class="countdown-remove" data-nome="${encodeURIComponent(e.nome)}" title="Rimanda a Da Sostenere">×</button>` : ""}
+      <div style="flex:1;min-width:0">
+        <div class="countdown-name">${e.nome}</div>
+        <div class="countdown-date" data-nome="${encodeURIComponent(e.nome)}">${e.data || "+ imposta data"} · ${e.cfu} CFU</div>
+      </div>
+      <div style="flex-shrink:0">
+        <div class="countdown-days" style="color:${color}">${bigVal}</div>
+        <div class="countdown-lbl">${bigLabel}</div>
+      </div>
+    </div>`;
+  }).join("");
 
-  document.getElementById('btn-add-exam').onclick = () => {
-    const nome = decodeURIComponent(sel.value);
-    const exam = ESAMI.find(e => e.nome === nome);
-    if (exam) { exam.status = 'next'; saveData(); render(); }
-  };
+  grid.querySelectorAll(".countdown-date").forEach(el => {
+    el.addEventListener("click", () => {
+      const nome = decodeURIComponent(el.dataset.nome);
+      const exam = ESAMI.find(e => e.nome === nome);
+      const inp  = document.createElement("input");
+      inp.type = "date"; inp.className = "date-input"; inp.value = toInputDate(exam.data);
+      editingCount++;
+      let closed = false;
+      const close = () => { if (closed) return; closed = true; editingCount--; };
+      const commit = () => {
+        if (closed) return;
+        const v = fromInputDate(inp.value);
+        if (v) { exam.data = v; close(); saveData().then(render); return; }
+        close(); render();
+      };
+      el.replaceWith(inp); inp.focus();
+      inp.addEventListener("blur", commit);
+      inp.addEventListener("keydown", ev => {
+        if (ev.key === "Enter") commit();
+        else if (ev.key === "Escape") { close(); render(); }
+      });
+    });
+  });
+
+  grid.querySelectorAll(".countdown-remove").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const nome = decodeURIComponent(btn.dataset.nome);
+      const exam = ESAMI.find(e => e.nome === nome);
+      if (exam) { exam.status = "todo"; saveData().then(render); }
+    });
+  });
 }
 
 function renderTable() {
   const anni = [...new Set(ESAMI.map(e => e.anno || 1))].sort();
-  let html = '';
+  let html = "";
   anni.forEach(anno => {
-    html += `<tr class="anno-row"><td colspan="5">Year ${anno}</td></tr>`;
-    ESAMI.filter(e => (e.anno || 1) === anno).forEach(e => {
-      const idx = ESAMI.indexOf(e);
-      const vc  = e.voto >= 27 ? 'green' : e.voto >= 24 ? 'yellow' : 'red';
-      const sw  = e.special_cfu ? `<span style="font-size:10px;color:var(--orange)" title="special weight: ${e.special_cfu} CFU">*</span>` : '';
-      const votoCell = isPassFail(e)
-        ? `<span class="voto-val" style="color:var(--muted);font-style:italic">P/F</span>`
-        : e.voto
-          ? `<span class="voto voto-val ${vc}">${e.voto}</span><span class="edit-hint">✎</span>`
+    html += `<tr class="anno-row"><td colspan="6">${anno}° anno</td></tr>`;
+    ESAMI.forEach((e, idx) => {
+      if ((e.anno || 1) !== anno) return;
+      const locked  = isDone(e);
+      const votoVal = fmtVoto(e);
+      const vc = e.lode ? "purple" : e.voto >= 27 ? "green" : e.voto >= 24 ? "yellow" : "red";
+      const votoInner = isPassFail(e)
+        ? `<span class="voto-val" style="color:var(--muted);font-style:italic">Idoneità</span>`
+        : votoVal
+          ? `${locked ? '<span class="lock-hint">🔒</span>' : ''}<span class="voto voto-val ${vc}">${votoVal}</span>${locked ? '' : '<span class="edit-hint">✎</span>'}`
           : `<span class="voto-val" style="color:var(--muted)">—</span><span class="edit-hint">✎</span>`;
+      const votoCellClass = isPassFail(e) ? "" : locked ? "voto-cell locked" : "voto-cell";
       html += `<tr>
         <td>${e.nome}</td>
-        <td style="color:var(--muted)">${e.cfu}${sw}</td>
-        <td class="${isPassFail(e) ? '' : 'voto-cell'}" data-idx="${idx}">${votoCell}</td>
-        <td style="color:var(--muted)">${e.data || '—'}</td>
+        <td style="color:var(--muted)">${e.cfu}${cfuEff(e) !== e.cfu ? `<span style="font-size:10px;color:var(--orange)" title="peso ${cfuEff(e)} CFU">*</span>` : ''}</td>
+        <td class="${votoCellClass}" data-idx="${idx}">${votoInner}</td>
+        <td style="color:var(--muted)">${e.data || "—"}</td>
         <td><span class="badge badge-${e.status}" data-idx="${idx}">${BADGE_LABEL[e.status]}</span></td>
+        <td style="color:var(--muted);font-size:11px">${e.note || ""}</td>
       </tr>`;
     });
   });
-  document.getElementById('exam-table').innerHTML = html;
+  document.getElementById("exam-table").innerHTML = html;
 
-  document.querySelectorAll('.voto-cell').forEach(td => {
-    td.addEventListener('click', () => {
+  document.querySelectorAll(".voto-cell:not(.locked)").forEach(td => {
+    td.addEventListener("click", () => {
       const idx  = parseInt(td.dataset.idx);
       const exam = ESAMI[idx];
-      if (isPassFail(exam)) return;
-      const inp = document.createElement('input');
-      inp.type = 'number'; inp.min = 18; inp.max = 30;
-      inp.value = exam.voto || ''; inp.placeholder = '18–30'; inp.className = 'inline-input';
-      td.innerHTML = ''; td.appendChild(inp); inp.focus();
+      const inp = document.createElement("input");
+      inp.type = "number"; inp.min = 18; inp.max = 31; inp.placeholder = "18–31";
+      inp.value = exam.lode ? 31 : (exam.voto || "");
+      inp.title = "18–31 (31 = 30 e lode)";
+      inp.className = "inline-input";
+      td.innerHTML = ""; td.appendChild(inp); inp.focus(); inp.select();
+      editingCount++;
+      let closed = false;
+      const close = () => { if (closed) return; closed = true; editingCount--; };
       const commit = () => {
-        const v = inp.value.trim();
-        exam.voto = v === '' ? null : Math.min(30, Math.max(18, parseInt(v)));
-        if (exam.voto && exam.status === 'todo') exam.status = 'wait';
-        if (exam.voto && exam.status === 'next') exam.status = 'done';
-        if (!exam.voto && exam.status === 'done') exam.status = 'todo';
-        saveData(); render();
+        if (closed) return;
+        const raw = inp.value.trim();
+        if (raw === "") {
+          exam.voto = null; exam.lode = false;
+          if (exam.status === "done" || exam.status === "wait") exam.status = "todo";
+        } else {
+          const n = Math.min(31, Math.max(18, parseInt(raw)));
+          if (n === 31) { exam.voto = 30; exam.lode = true; }
+          else          { exam.voto = n;  exam.lode = false; }
+          if (exam.status !== "done") exam.status = "wait";
+          window.ntfySend(`${exam.nome}: ${fmtVoto(exam)}`);
+        }
+        close();
+        saveData().then(render);
       };
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') render(); });
-      inp.addEventListener('blur', commit);
+      const cancel = () => { close(); render(); };
+      inp.addEventListener("blur", commit);
+      inp.addEventListener("keydown", ev => {
+        if (ev.key === "Enter") commit();
+        else if (ev.key === "Escape") cancel();
+      });
     });
   });
 
-  document.querySelectorAll('.badge[data-idx]').forEach(badge => {
-    badge.addEventListener('click', ev => {
+  document.querySelectorAll(".badge[data-idx]").forEach(badge => {
+    badge.addEventListener("click", ev => {
       ev.stopPropagation();
       const idx = parseInt(badge.dataset.idx);
       const cur = STATUS_CYCLE.indexOf(ESAMI[idx].status);
       ESAMI[idx].status = STATUS_CYCLE[(cur + 1) % STATUS_CYCLE.length];
-      saveData(); render();
+      saveData().then(render);
     });
   });
 }
 
 function renderProiezione() {
-  const T    = CONFIG.target_media || 27;
-  const done = ESAMI.filter(e => e.voto);
+  // Tesi e idoneità escluse (isEsame) — la tesi non "diluisce" la media richiesta
+  const done = ESAMI.filter(e => isEsame(e) && e.voto);
   let sp = 0, sc = 0;
   done.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
-  const rem    = ESAMI.filter(e => !e.voto && !isPassFail(e));
+  const rem    = ESAMI.filter(e => isEsame(e) && !e.voto);
   const remCFU = rem.reduce((s, e) => s + e.cfu, 0);
   const totEff = sc + remCFU;
-  const needed = remCFU > 0 ? (T * totEff - sp) / remCFU : 0;
-  const color  = needed > 30 ? 'var(--red)' : needed <= T ? 'var(--green)' : needed <= 29 ? 'var(--yellow)' : 'var(--orange)';
   const cur    = calcMedia();
-  document.getElementById('proj-box').innerHTML = `
+
+  let mainVal, desc, color = "var(--muted)", neededNum = 0;
+  if (remCFU === 0) {
+    mainVal = "—"; desc = "Nessun esame residuo.";
+  } else {
+    neededNum = (TARGET_MEDIA * totEff - sp) / remCFU;
+    if (neededNum > 30) {
+      mainVal = "✗"; color = "var(--red)";
+      desc = `Target ${TARGET_MEDIA} irraggiungibile con la sola media — servirebbe > 30.`;
+    } else if (neededNum < 18) {
+      mainVal = "<18"; color = "var(--green)";
+      desc = `Target ${TARGET_MEDIA} già praticamente garantito.`;
+    } else {
+      mainVal = neededNum.toFixed(2);
+      color = neededNum <= TARGET_MEDIA ? "var(--green)" : neededNum <= 29 ? "var(--yellow)" : "var(--orange)";
+      desc  = `media minima uniforme sui prossimi ${rem.length} esami (${remCFU} CFU)<br>per raggiungere il target di ${TARGET_MEDIA}`;
+    }
+  }
+
+  const margin = 30 - neededNum;
+  document.getElementById("proj-box").innerHTML = `
     <div class="proj-main">
-      <div class="proj-val" style="color:${color}">${needed > 0 && needed <= 30 ? needed.toFixed(2) : needed > 30 ? '✗' : '—'}</div>
-      <div class="proj-desc">minimum uniform average across the next ${rem.length} exams (${remCFU} CFU)<br>to reach your target of ${T}</div>
+      <div class="proj-val" style="color:${color}">${mainVal}</div>
+      <div class="proj-desc">${desc}</div>
     </div>
     <div class="proj-bar-wrap">
-      <div class="proj-bar-labels"><span>18</span><span>target ${T}</span><span>30</span></div>
+      <div class="proj-bar-labels"><span>18</span><span>target ${TARGET_MEDIA}</span><span>30</span></div>
       <div class="proj-bar">
-        <div class="proj-bar-fill" style="width:${Math.min(100,(needed/30)*100)}%;background:${color}"></div>
-        <div class="proj-bar-marker" style="left:${(cur/30)*100}%" title="current avg ${cur.toFixed(2)}"></div>
+        <div class="proj-bar-fill" style="width:${Math.min(100, Math.max(0, (neededNum/30)*100))}%;background:${color}"></div>
+        <div class="proj-bar-marker" style="left:${(cur/30)*100}%" title="media attuale ${cur.toFixed(2)}"></div>
       </div>
     </div>
     <div class="proj-grid">
-      <div class="proj-cell"><div class="proj-cell-label">CFU with grade</div><div class="proj-cell-val blue">${sc} <span style="font-size:11px;font-weight:400;color:var(--muted)">/ ${totEff}</span></div></div>
-      <div class="proj-cell"><div class="proj-cell-label">Current avg</div><div class="proj-cell-val ${cur >= T ? 'green' : 'yellow'}">${cur.toFixed(2)}</div></div>
-      <div class="proj-cell"><div class="proj-cell-label">Margin below 30</div><div class="proj-cell-val ${30-needed >= 1 ? 'green' : 'red'}">${needed <= 30 ? (30-needed).toFixed(2) : '✗'}</div></div>
-    </div>
-    ${needed > 30 ? `<div style="margin-top:12px;font-size:12px;color:var(--red)">Target unreachable through grades alone — consider revising your target.</div>` : ''}`;
+      <div class="proj-cell"><div class="proj-cell-label">CFU con voto</div><div class="proj-cell-val blue">${sc} <span style="font-size:11px;color:var(--muted)">/ ${totEff}</span></div></div>
+      <div class="proj-cell"><div class="proj-cell-label">Media attuale</div><div class="proj-cell-val ${cur >= TARGET_MEDIA ? 'green' : 'yellow'}">${cur.toFixed(2)}</div></div>
+      <div class="proj-cell"><div class="proj-cell-label">Margine su 30</div><div class="proj-cell-val ${margin >= 1 ? 'green' : 'red'}">${remCFU === 0 || neededNum > 30 ? '—' : margin.toFixed(2)}</div></div>
+    </div>`;
 }
 
-function initSimulatore() {
-  const sel = document.getElementById('sim-exam');
-  sel.innerHTML = ESAMI.filter(e => !e.voto && !isPassFail(e)).map(e =>
-    `<option value="${e.nome}">${e.nome} (${e.cfu} CFU)</option>`).join('');
+// ── Simulatore multi-esame ───────────────────────────────────────────────
+const simEntries = [];
+
+function futuriPerSim() {
+  return ESAMI.filter(e => isEsame(e) && !e.voto);
+}
+function futuriDisponibili() {
+  const usati = new Set(simEntries.map(s => s.nome));
+  return futuriPerSim().filter(e => !usati.has(e.nome));
+}
+
+function addSimEntry() {
+  const disp = futuriDisponibili();
+  if (!disp.length) return;
+  simEntries.push({ nome: disp[0].nome, voto: 27, lode: false });
+  renderSimEntries();
   updateSim();
-  sel.onchange = updateSim;
-  document.getElementById('sim-grade').oninput = () => {
-    document.getElementById('sim-grade-val').textContent = document.getElementById('sim-grade').value;
-    updateSim();
-  };
+}
+function removeSimEntry(i) {
+  simEntries.splice(i, 1);
+  renderSimEntries();
+  updateSim();
+}
+window.removeSimEntry = removeSimEntry; // handler inline
+
+function pruneSimEntries() {
+  const validi = new Set(futuriPerSim().map(e => e.nome));
+  for (let i = simEntries.length - 1; i >= 0; i--) {
+    if (!validi.has(simEntries[i].nome)) simEntries.splice(i, 1);
+  }
+}
+
+function renderSimEntries() {
+  const container = document.getElementById("sim-entries");
+  const futuri = futuriPerSim();
+  container.innerHTML = simEntries.map((entry, i) => {
+    const usati = new Set(simEntries.filter((_, j) => j !== i).map(s => s.nome));
+    const opts = futuri.filter(e => !usati.has(e.nome));
+    const label = entry.lode ? "30L" : entry.voto;
+    return `<div class="sim-entry">
+      <div class="sim-entry-head">
+        <div class="field-label" style="margin:0">Esame ${i + 1}</div>
+        <button class="sim-remove" onclick="removeSimEntry(${i})" title="Rimuovi">×</button>
+      </div>
+      <select onchange="simEntries[${i}].nome=this.value;updateSim()">
+        ${opts.map(e => `<option value="${e.nome}" ${e.nome === entry.nome ? "selected" : ""}>${e.nome} (${e.cfu} CFU)</option>`).join("")}
+      </select>
+      <div class="grade-row">
+        <input type="range" min="18" max="31" value="${entry.lode ? 31 : entry.voto}"
+               oninput="const v=+this.value; simEntries[${i}].lode=(v===31); simEntries[${i}].voto=(v===31?30:v); this.nextElementSibling.textContent=(v===31?'30L':v); updateSim()">
+        <span class="grade-badge ${entry.lode ? 'purple' : ''}">${label}</span>
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("sim-add").style.display = futuriDisponibili().length ? "" : "none";
 }
 
 function updateSim() {
-  const T    = CONFIG.target_media || 27;
-  const nome = document.getElementById('sim-exam').value;
-  const voto = parseInt(document.getElementById('sim-grade').value);
-  const exam = ESAMI.find(e => e.nome === nome);
-  if (!exam) return;
+  if (!simEntries.length) {
+    document.getElementById("sim-new-media").textContent = "—";
+    document.getElementById("sim-rows").innerHTML = "";
+    document.getElementById("sim-hint").textContent = "Aggiungi almeno un esame per simulare.";
+    return;
+  }
+  const extras = simEntries.map(s => {
+    const src = ESAMI.find(e => e.nome === s.nome);
+    return { ...src, voto: s.voto, lode: s.lode };
+  });
   const cur   = calcMedia();
-  const nuova = calcMedia({ ...exam, voto });
-  const delta = nuova - cur, vsT = nuova - T;
-  const vl    = votoLaurea(nuova);
-  document.getElementById('sim-new-media').textContent = nuova.toFixed(3);
-  document.getElementById('sim-new-media').className =
-    'sim-result-val ' + (nuova >= T ? 'green' : nuova > cur ? 'yellow' : 'red');
-  document.getElementById('sim-rows').innerHTML = `
-    <div class="sim-result-row"><span style="color:var(--muted)">Current average</span><span>${cur.toFixed(3)}</span></div>
-    <div class="sim-result-row"><span style="color:var(--muted)">Change</span><span class="${delta >= 0 ? 'green' : 'red'}">${delta >= 0 ? '+' : ''}${delta.toFixed(3)}</span></div>
-    <div class="sim-result-row"><span style="color:var(--muted)">Delta vs target ${T}</span><span class="${vsT >= 0 ? 'green' : 'red'}">${vsT >= 0 ? '+' : ''}${vsT.toFixed(3)}</span></div>
-    <div class="sim-result-row"><span style="color:var(--muted)">Est. degree grade</span><span class="${vl === '110L' ? 'purple' : ''}">${vl ?? '—'}</span></div>`;
-  document.getElementById('sim-hint').textContent =
-    nuova >= T ? '✓ Above target.' : `Still ${(T - nuova).toFixed(3)} points below target.`;
+  const nuova = calcMedia(extras);
+  const lodi  = countLodi(extras);
+  const delta = nuova - cur;
+  const vsT   = nuova - TARGET_MEDIA;
+  const vl    = votoLaurea(nuova, lodi);
+
+  const el = document.getElementById("sim-new-media");
+  el.textContent = nuova.toFixed(3);
+  el.className   = "sim-result-val " + (nuova >= TARGET_MEDIA ? "green" : nuova > cur ? "yellow" : "red");
+
+  document.getElementById("sim-rows").innerHTML = `
+    <div class="sim-result-row"><span style="color:var(--muted)">Media attuale</span><span>${cur.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Esami simulati</span><span>${simEntries.length}${lodi ? ` · ${lodi}×L` : ""}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Variazione</span><span class="${delta >= 0 ? 'green' : 'red'}">${delta >= 0 ? '+' : ''}${delta.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Delta vs target ${TARGET_MEDIA}</span><span class="${vsT >= 0 ? 'green' : 'red'}">${vsT >= 0 ? '+' : ''}${vsT.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Voto laurea stimato</span><span class="${vl === '110L' ? 'purple' : ''}">${vl ?? '—'}</span></div>`;
+
+  document.getElementById("sim-hint").textContent =
+    nuova >= TARGET_MEDIA ? "✓ Sopra il target — in linea per 110L." : `Ancora ${(TARGET_MEDIA - nuova).toFixed(3)} punti al target.`;
 }
 
+// ── Tema ─────────────────────────────────────────────────────────────────
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("anton_theme", t);
+}
+(function initTheme() {
+  const saved = localStorage.getItem("anton_theme")
+             || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  applyTheme(saved);
+})();
+
+// ── Init ─────────────────────────────────────────────────────────────────
 function render() {
   renderCards();
   renderCountdowns();
   renderTable();
   renderProiezione();
-  initSimulatore();
-  document.getElementById('last-update').textContent =
-    'updated ' + new Date().toLocaleTimeString();
+  pruneSimEntries();
+  renderSimEntries();
+  updateSim();
+  document.getElementById("last-update").textContent =
+    "aggiornato " + new Date().toLocaleTimeString("it-IT");
 }
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+});
+document.getElementById("sim-add").addEventListener("click", addSimEntry);
 
 renderClock();
 setInterval(renderClock, 1000);
-setInterval(loadAll, 30000);
-loadAll();
+setInterval(() => { if (editingCount === 0) loadData(); }, 30000);
+loadConfig().then(loadData).then(() => { if (!simEntries.length) addSimEntry(); });
 </script>
 </body>
 </html>
