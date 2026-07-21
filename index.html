@@ -168,6 +168,27 @@
 </div>
 
 <div class="section">
+  <div class="section-title">Accetta o Rifiuta? — impatto di un voto proposto sulla corsa a 110L</div>
+  <div class="sim-box">
+    <div class="sim-panel">
+      <div class="field-label">Esame</div>
+      <select id="acc-exam"></select>
+      <div class="field-label" style="margin-top:12px">Voto proposto</div>
+      <div class="grade-row">
+        <input type="range" id="acc-grade" min="18" max="31" value="27">
+        <span class="grade-badge" id="acc-grade-val">27</span>
+      </div>
+    </div>
+    <div class="sim-panel">
+      <div class="field-label">Verdetto</div>
+      <div class="sim-result-val" id="acc-verdict">—</div>
+      <div id="acc-rows"></div>
+      <div class="sim-hint" id="acc-hint"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
   <div class="section-title">Piano di Studi — click sul voto per editarlo · click sul badge per ciclare lo status</div>
   <div class="table-wrap">
     <table>
@@ -630,6 +651,77 @@ function updateSim() {
     nuova >= TARGET_MEDIA ? "✓ Sopra il target — in linea per 110L." : `Ancora ${(TARGET_MEDIA - nuova).toFixed(3)} punti al target.`;
 }
 
+// ── Accetta o Rifiuta ────────────────────────────────────────────────────
+function analyzeAccept(examNome, rawGrade) {
+  const exam = ESAMI.find(e => e.nome === examNome);
+  if (!exam) return null;
+  const isLode  = rawGrade === 31;
+  const voto    = isLode ? 30 : rawGrade;
+  const cfuThis = cfuEff(exam);
+
+  const done = ESAMI.filter(e => isEsame(e) && e.voto && (e.status === "done" || e.status === "wait"));
+  let sp = 0, sc = 0;
+  done.forEach(e => { sp += e.voto * cfuEff(e); sc += cfuEff(e); });
+  const rem    = ESAMI.filter(e => isEsame(e) && !e.voto && e.nome !== examNome);
+  const remCFU = rem.reduce((s, e) => s + e.cfu, 0);
+  const lodiFuture = countLodi() + (isLode ? 1 : 0);
+  const m110   = mediaPer110L(lodiFuture);
+  const totEff = sc + cfuThis + remCFU;
+  const mediaDopo = (sp + voto * cfuThis) / (sc + cfuThis);
+  const needed = remCFU > 0 ? (m110 * totEff - sp - voto * cfuThis) / remCFU : null;
+  const breakEvenRaw = remCFU > 0
+    ? (m110 * totEff - sp - 30 * remCFU) / cfuThis
+    : m110;
+  const breakEven = Math.max(0, Math.min(30, breakEvenRaw));
+
+  let verdict, color, msg;
+  if (remCFU === 0) {
+    if (mediaDopo >= m110) { verdict = "ACCETTA"; color = "green";
+      msg = `Ultimo esame — con ${isLode ? '30L' : voto} chiudi a ${mediaDopo.toFixed(2)} ≥ ${m110.toFixed(2)}. 110L nel sacco.`; }
+    else { verdict = "RIFIUTA"; color = "red";
+      msg = `Ultimo esame — con ${isLode ? '30L' : voto} chiudi a ${mediaDopo.toFixed(2)}, sotto la soglia 110L (${m110.toFixed(2)}).`; }
+  } else if (needed > 30) {
+    verdict = "RIFIUTA"; color = "red";
+    msg = `Con ${isLode ? '30L' : voto} servirebbe media ${needed.toFixed(2)} sui restanti ${rem.length} esami — impossibile (max 30). 110L fuori portata.`;
+  } else if (needed <= m110 - 0.5) {
+    verdict = "ACCETTA"; color = "green";
+    msg = `Con ${isLode ? '30L' : voto} basta media ${needed.toFixed(2)} sui restanti — margine comodo per 110L.`;
+  } else {
+    verdict = "ACCETTA CON RISERVA"; color = "yellow";
+    msg = `Con ${isLode ? '30L' : voto} dovrai fare media ${needed.toFixed(2)} sui restanti ${rem.length} esami (${remCFU} CFU). Fattibile ma stretto.`;
+  }
+  return { verdict, color, msg, breakEven, mediaDopo, needed, m110, lodiFuture };
+}
+
+function initAcc() {
+  const sel = document.getElementById("acc-exam");
+  const futuri = ESAMI.filter(e => isEsame(e) && !e.voto);
+  const cur = sel.value;
+  sel.innerHTML = futuri.map(e => `<option value="${e.nome}" ${e.nome === cur ? "selected" : ""}>${e.nome} (${e.cfu} CFU)</option>`).join("");
+  if (!futuri.length) { document.getElementById("acc-verdict").textContent = "—"; document.getElementById("acc-rows").innerHTML = ""; document.getElementById("acc-hint").textContent = "Nessun esame senza voto."; return; }
+  updateAcc();
+}
+
+function updateAcc() {
+  const nome = document.getElementById("acc-exam").value;
+  const raw  = parseInt(document.getElementById("acc-grade").value);
+  const badge = document.getElementById("acc-grade-val");
+  badge.textContent = raw === 31 ? "30L" : raw;
+  badge.className = "grade-badge" + (raw === 31 ? " purple" : "");
+  const r = analyzeAccept(nome, raw);
+  if (!r) return;
+  const el = document.getElementById("acc-verdict");
+  el.textContent = r.verdict;
+  el.className = "sim-result-val " + r.color;
+  el.style.fontSize = "24px";
+  document.getElementById("acc-rows").innerHTML = `
+    <div class="sim-result-row"><span style="color:var(--muted)">Media dopo questo voto</span><span>${r.mediaDopo.toFixed(3)}</span></div>
+    <div class="sim-result-row"><span style="color:var(--muted)">Soglia 110L${r.lodiFuture ? ` (${r.lodiFuture}L)` : ''}</span><span>${r.m110.toFixed(3)}</span></div>
+    ${r.needed !== null ? `<div class="sim-result-row"><span style="color:var(--muted)">Media richiesta sui restanti</span><span class="${r.needed > 30 ? 'red' : r.needed > 29 ? 'orange' : r.needed > r.m110 ? 'yellow' : 'green'}">${r.needed <= 30 ? r.needed.toFixed(2) : '> 30'}</span></div>` : ''}
+    <div class="sim-result-row"><span style="color:var(--muted)">Voto break-even (sotto = 110L impossibile)</span><span class="${raw >= r.breakEven ? 'green' : 'red'}">${r.breakEven <= 0 ? '—' : r.breakEven >= 30 ? '≥ 30' : r.breakEven.toFixed(1)}</span></div>`;
+  document.getElementById("acc-hint").textContent = r.msg;
+}
+
 // ── Tema ─────────────────────────────────────────────────────────────────
 function applyTheme(t) {
   document.documentElement.setAttribute("data-theme", t);
@@ -650,6 +742,7 @@ function render() {
   pruneSimEntries();
   renderSimEntries();
   updateSim();
+  initAcc();
   document.getElementById("last-update").textContent =
     "aggiornato " + new Date().toLocaleTimeString("it-IT");
 }
@@ -658,6 +751,8 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
   applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
 });
 document.getElementById("sim-add").addEventListener("click", addSimEntry);
+document.getElementById("acc-exam").addEventListener("change", updateAcc);
+document.getElementById("acc-grade").addEventListener("input", updateAcc);
 
 renderClock();
 setInterval(renderClock, 1000);
