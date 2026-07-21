@@ -289,6 +289,10 @@ function countLodi(extras = []) {
 function cfuMaturati() {
   return ESAMI.filter(e => e.status === "done" || e.status === "wait").reduce((s, e) => s + e.cfu, 0);
 }
+function mediaPer110L(lodi = 0) {
+  // round(m/30*110 + lodi*PUNTI_LODE) + BONUS_TESI >= 111
+  return (111 - BONUS_TESI - 0.5 - lodi * PUNTI_LODE) * 30 / 110;
+}
 function votoLaurea(media, lodi = 0) {
   if (media <= 0) return null;
   const base = Math.round(media / 30 * 110 + lodi * PUNTI_LODE);
@@ -309,6 +313,8 @@ function renderCards() {
   const lodi  = countLodi();
   const cfu   = cfuMaturati();
   const delta = media - TARGET_MEDIA;
+  const m110    = mediaPer110L(lodi);
+  const delta110 = media - m110;
   const pct   = Math.round(cfu / TOTAL_CFU * 100);
   const vl    = votoLaurea(media, lodi);
   const vlColor = vl === "110L" ? "purple" : parseInt(vl) >= 108 ? "green" : parseInt(vl) >= 104 ? "yellow" : "red";
@@ -326,9 +332,9 @@ function renderCards() {
       <div class="card-sub">incl. voti in attesa · pesi speciali applicati</div>
     </div>
     <div class="card">
-      <div class="card-label">Delta vs Target ${TARGET_MEDIA}</div>
-      <div class="card-value ${delta >= 0 ? 'green' : 'red'}">${media > 0 ? (delta >= 0 ? '+' : '') + delta.toFixed(2) : '—'}</div>
-      <div class="card-sub">+${BONUS_TESI} tesi+discussione (max)</div>
+      <div class="card-label">Delta vs 110L</div>
+      <div class="card-value ${delta110 >= 0 ? 'purple' : 'red'}">${media > 0 ? (delta110 >= 0 ? '✓' : delta110.toFixed(2)) : '—'}</div>
+      <div class="card-sub">serve ≥ ${m110.toFixed(2)}${lodi ? ` (${lodi}L)` : ''} · target ${TARGET_MEDIA}: ${delta >= 0 ? '+' : ''}${delta.toFixed(2)}</div>
     </div>
     <div class="card">
       <div class="card-label">Voto di Laurea Stimato</div>
