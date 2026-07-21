@@ -172,7 +172,7 @@
   <div class="table-wrap">
     <table>
       <thead>
-        <tr><th>Insegnamento</th><th>CFU</th><th>Voto</th><th>Data</th><th>Status</th><th>Note</th></tr>
+        <tr><th>Insegnamento</th><th>CFU</th><th>Voto</th><th>Data</th><th>Status</th></tr>
       </thead>
       <tbody id="exam-table"></tbody>
     </table>
@@ -420,7 +420,7 @@ function renderTable() {
   const anni = [...new Set(ESAMI.map(e => e.anno || 1))].sort();
   let html = "";
   anni.forEach(anno => {
-    html += `<tr class="anno-row"><td colspan="6">${anno}° anno</td></tr>`;
+    html += `<tr class="anno-row"><td colspan="5">${anno}° anno</td></tr>`;
     ESAMI.forEach((e, idx) => {
       if ((e.anno || 1) !== anno) return;
       const locked  = isDone(e);
@@ -438,7 +438,6 @@ function renderTable() {
         <td class="${votoCellClass}" data-idx="${idx}">${votoInner}</td>
         <td style="color:var(--muted)">${e.data || "—"}</td>
         <td><span class="badge badge-${e.status}" data-idx="${idx}">${BADGE_LABEL[e.status]}</span></td>
-        <td style="color:var(--muted);font-size:11px">${e.note || ""}</td>
       </tr>`;
     });
   });
