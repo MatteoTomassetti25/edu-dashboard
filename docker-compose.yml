@@ -3,6 +3,8 @@ services:
     build: .
     container_name: edu-dashboard
     restart: unless-stopped
+    stop_signal: SIGINT      # python http.server doesn't handle SIGTERM → avoids the 10s grace period on stop/restart
+    stop_grace_period: 2s
     # Optional: bind ONLY on a Tailscale IP to expose over the private mesh
     # ports:
     #   - "100.x.y.z:8801:8800"
