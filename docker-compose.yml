@@ -1,10 +1,16 @@
 services:
-  dashboard:
-    image: python:3-slim
-    command: python /app/server.py
-    working_dir: /app
-    volumes:
-      - .:/app
-    ports:
-      - "${PORT:-8800}:8800"
+  edu-dashboard:
+    build: .
+    container_name: edu-dashboard
     restart: unless-stopped
+    # Optional: bind ONLY on a Tailscale IP to expose over the private mesh
+    # ports:
+    #   - "100.x.y.z:8801:8800"
+    ports:
+      - "8801:8800"
+    environment:
+      - DATA_DIR=/data
+    volumes:
+      # Bind the DIRECTORY (not the file). os.replace needs to swap within the same fs;
+      # binding a single file into the container makes it a mount point and EBUSY on rename.
+      - ./data:/data
